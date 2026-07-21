@@ -25,30 +25,12 @@
 
     <div class="hero-pro-stats" data-aos="fade-up" data-aos-delay="80">
       <div class="hstat glass"><h3 class="stat-number" data-count="9" data-suffix="+">9+</h3><p>Years of Operations</p></div>
-      <div class="hstat glass"><h3 class="stat-number" data-count="60" data-suffix="+">60+</h3><p>Specialists</p></div>
       <div class="hstat glass"><h3 class="stat-number" data-count="8" data-suffix="">8</h3><p>Specialist Teams</p></div>
       <div class="hstat glass"><h3 class="stat-number" data-count="7" data-suffix="+">7+</h3><p>Countries</p></div>
+      <div class="hstat glass"><h3 class="stat-number" data-count="4" data-suffix="">4</h3><p>Continents</p></div>
     </div>
   </div>
 </section>
-
-<!-- ============ MARQUEE ============ -->
-<div class="marquee-strip">
-  <div class="marquee-track">
-    <?php for ($i = 0; $i < 2; $i++): ?>
-      <span>USA</span><span class="dot">●</span>
-      <span>Canada</span><span class="dot">●</span>
-      <span>United Kingdom</span><span class="dot">●</span>
-      <span>Germany</span><span class="dot">●</span>
-      <span>Italy</span><span class="dot">●</span>
-      <span>Brazil</span><span class="dot">●</span>
-      <span>Chennai Head Office</span><span class="dot">●</span>
-      <span>China Operations Base</span><span class="dot">●</span>
-      <span>9+ Years of Operations</span><span class="dot">●</span>
-      <span>60+ Specialists</span><span class="dot">●</span>
-    <?php endfor; ?>
-  </div>
-</div>
 
 <div class="dark-canvas">
   <div class="orb orb-1"></div>
@@ -64,17 +46,19 @@
       <?php
         $metrics = [
           ['9', '+', 'Years of Operations', 'bi-calendar3'],
-          ['60', '+', 'Specialists', 'bi-people'],
           ['8', '', 'Specialist Teams', 'bi-diagram-3'],
           ['7', '+', 'Countries', 'bi-globe2'],
           ['4', '', 'Continents', 'bi-globe-americas'],
           ['100', '%', 'In-house Expertise', 'bi-buildings'],
+          ['2016', '', 'Founded', 'bi-flag', false],
         ];
         foreach ($metrics as $i => [$num, $suf, $label, $icon]):
+          // Years render statically — the counter would animate them like a quantity.
+          $animate = $metrics[$i][4] ?? true;
       ?>
         <div class="trust-card glass" data-aos="zoom-in" data-aos-delay="<?= $i * 60 ?>">
           <i class="bi <?= $icon ?>"></i>
-          <h3 class="stat-number" data-count="<?= $num ?>" data-suffix="<?= $suf ?>"><?= $num . $suf ?></h3>
+          <h3 class="stat-number"<?= $animate ? ' data-count="' . $num . '" data-suffix="' . $suf . '"' : '' ?>><?= $num . $suf ?></h3>
           <p><?= $label ?></p>
         </div>
       <?php endforeach; ?>
