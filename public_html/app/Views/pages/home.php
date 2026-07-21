@@ -45,12 +45,12 @@
     <div class="trust-grid">
       <?php
         $metrics = [
+          ['2016', '', 'Founded', 'bi-flag', false],
           ['9', '+', 'Years of Operations', 'bi-calendar3'],
           ['8', '', 'Specialist Teams', 'bi-diagram-3'],
           ['7', '+', 'Countries', 'bi-globe2'],
           ['4', '', 'Continents', 'bi-globe-americas'],
           ['100', '%', 'In-house Expertise', 'bi-buildings'],
-          ['2016', '', 'Founded', 'bi-flag', false],
         ];
         foreach ($metrics as $i => [$num, $suf, $label, $icon]):
           // Years render statically — the counter would animate them like a quantity.
