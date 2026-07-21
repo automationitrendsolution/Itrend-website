@@ -1,0 +1,10 @@
+# iTrend Solution — robots
+User-agent: *
+Allow: /
+
+# Keep crawlers out of app internals (also blocked at the server)
+Disallow: /app/
+Disallow: /storage/
+Disallow: /vendor/
+
+Sitemap: https://itrendsolution.com/sitemap.xml

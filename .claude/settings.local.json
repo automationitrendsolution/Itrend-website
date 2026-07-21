@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -vE 'require __DIR__|require APP_PATH|require \\\\$path|require_once')",
+      "Bash(php -v)",
+      "Bash(php -S 127.0.0.1:8765 -t public_html public_html/router.php)",
+      "Bash(echo \"server pid $!\")"
+    ]
+  }
+}

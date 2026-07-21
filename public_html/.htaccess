@@ -1,0 +1,144 @@
+# ============================================================
+#  iTrend Solution — document-root .htaccess
+#  Front-controller routing + security hardening
+# ============================================================
+
+# ---- Don't list directories ----
+Options -Indexes +FollowSymLinks
+
+# ---- Branded error pages for server-level errors (4xx + 5xx) ----
+ErrorDocument 400 /error.php
+ErrorDocument 401 /error.php
+ErrorDocument 402 /error.php
+ErrorDocument 403 /error.php
+ErrorDocument 404 /error.php
+ErrorDocument 405 /error.php
+ErrorDocument 406 /error.php
+ErrorDocument 407 /error.php
+ErrorDocument 408 /error.php
+ErrorDocument 409 /error.php
+ErrorDocument 410 /error.php
+ErrorDocument 411 /error.php
+ErrorDocument 412 /error.php
+ErrorDocument 413 /error.php
+ErrorDocument 414 /error.php
+ErrorDocument 415 /error.php
+ErrorDocument 416 /error.php
+ErrorDocument 417 /error.php
+ErrorDocument 418 /error.php
+ErrorDocument 421 /error.php
+ErrorDocument 422 /error.php
+ErrorDocument 423 /error.php
+ErrorDocument 424 /error.php
+ErrorDocument 425 /error.php
+ErrorDocument 426 /error.php
+ErrorDocument 428 /error.php
+ErrorDocument 429 /error.php
+ErrorDocument 431 /error.php
+ErrorDocument 451 /error.php
+ErrorDocument 500 /error.php
+ErrorDocument 501 /error.php
+ErrorDocument 502 /error.php
+ErrorDocument 503 /error.php
+ErrorDocument 504 /error.php
+ErrorDocument 505 /error.php
+ErrorDocument 506 /error.php
+ErrorDocument 507 /error.php
+ErrorDocument 508 /error.php
+ErrorDocument 510 /error.php
+ErrorDocument 511 /error.php
+
+# ---- Block access to the application, runtime & secret folders ----
+RedirectMatch 404 ^/app(/|$)
+RedirectMatch 404 ^/storage(/|$)
+RedirectMatch 404 ^/vendor(/|$)
+RedirectMatch 404 ^/workspace(/|$)
+
+# ---- Block dotfiles, the dev router, secrets, and sensitive file types ----
+<FilesMatch "(^\.|\.(env|ini|log|sql|md|sh|lock|dist|bak)$)|^composer\.(json|lock)$|^router\.php$|^itrend-secrets.*\.json$">
+    Require all denied
+</FilesMatch>
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    Options -MultiViews
+
+    # If the app is installed in a subdirectory, set the base here, e.g.:
+    # RewriteBase /
+
+    # --- Block LFI / RFI / traversal probes (defence in depth) ---
+    # The app never includes a user-supplied path, but reject the obvious
+    # attack signatures outright so they never reach PHP at all.
+    RewriteCond %{QUERY_STRING} (?:\.\./|\.\.%2f)                         [NC,OR]
+    RewriteCond %{QUERY_STRING} (?:php|data|file|ftp|expect|phar|zip|glob|input|filter)\:// [NC,OR]
+    RewriteCond %{QUERY_STRING} (?:/etc/passwd|boot\.ini|win\.ini|/proc/self) [NC,OR]
+    RewriteCond %{QUERY_STRING} (?:%00|%0a|%0d|\x00)                      [NC,OR]
+    RewriteCond %{REQUEST_URI}  (?:\.\./|\.\.%2f|%00)                     [NC]
+    RewriteRule ^ - [F]
+
+    # --- Reject TRACE / TRACK / DEBUG and anything but the methods we use ---
+    RewriteCond %{REQUEST_METHOD} !^(GET|HEAD|POST)$ [NC]
+    RewriteRule ^ - [F]
+
+    # --- Canonical URLs ---
+    # 1. Redirect a direct /index.php request to the clean root.
+    RewriteCond %{THE_REQUEST} \s/+index\.php[\s?] [NC]
+    RewriteRule ^ %{ENV:BASE}/ [R=301,L]
+
+    # 2. Strip trailing slashes (except the root and real directories).
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.+?)/+$ /$1 [R=301,L]
+
+    # --- Static assets & real files: serve directly, no rewrite ---
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    # --- Front controller: route everything else to index.php (preserve query string) ---
+    RewriteRule ^ index.php [QSA,L]
+</IfModule>
+
+# HTTPS canonical redirect (enable in production once SSL is active):
+# <IfModule mod_rewrite.c>
+#     RewriteCond %{HTTPS} off
+#     RewriteCond %{HTTP:X-Forwarded-Proto} !https
+#     RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+# </IfModule>
+
+# ============================================================
+#  Security response headers (also re-asserted in PHP)
+# ============================================================
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=(), usb=(), browsing-topics=(), interest-cohort=()"
+    Header always set Cross-Origin-Opener-Policy "same-origin"
+    Header always set Cross-Origin-Resource-Policy "same-origin"
+    Header always set X-Permitted-Cross-Domain-Policies "none"
+    Header always set X-XSS-Protection "0"
+    Header always unset X-Powered-By
+    Header always unset Server
+    # HSTS — only meaningful over HTTPS; harmless over HTTP.
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" "expr=%{HTTPS} == 'on'"
+
+    # Content Security Policy — only the origins the site actually loads (AOS/CSS/JS self-hosted).
+    Header always set Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https:; media-src 'self'; frame-src 'self' https://www.google.com https://maps.google.com; object-src 'none'; connect-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests"
+</IfModule>
+
+# ---- Long-cache static assets ----
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/css "access plus 7 days"
+    ExpiresByType application/javascript "access plus 7 days"
+    ExpiresByType image/png "access plus 30 days"
+    ExpiresByType image/jpeg "access plus 30 days"
+    ExpiresByType image/webp "access plus 30 days"
+    ExpiresByType video/mp4 "access plus 30 days"
+    ExpiresByType font/woff2 "access plus 30 days"
+</IfModule>
+
+# ---- Gzip/Deflate text assets ----
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/css application/javascript application/json image/svg+xml
+</IfModule>

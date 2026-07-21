@@ -1,0 +1,18 @@
+# ---- Confidentials (never commit) ----
+workspace/itrend-secrets.json
+!workspace/itrend-secrets.example.json
+itrend-secrets.json
+
+# ---- Runtime artifacts ----
+public_html/storage/logs/*
+public_html/storage/cache/*
+!public_html/storage/logs/.gitkeep
+!public_html/storage/cache/.gitkeep
+
+# ---- OS / editor ----
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
+*.log
