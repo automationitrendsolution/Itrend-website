@@ -28,13 +28,6 @@
             <a href="mailto:hr@itrendsolution.com">hr@itrendsolution.com</a>
           </div>
         </div>
-        <div class="contact-card glass">
-          <span class="c-icon-wrap"><i class="bi bi-globe2"></i></span>
-          <div class="cc-body">
-            <h5>Global Operations</h5>
-            <p>USA · UK · Canada · Germany<br>Italy · Brazil · India · China</p>
-          </div>
-        </div>
         <div class="contact-quick">
           <button class="btn-ghost" data-bs-toggle="modal" data-bs-target="#careerModal">Apply for a Job</button>
         </div>

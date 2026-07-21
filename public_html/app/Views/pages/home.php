@@ -17,17 +17,10 @@
         Where Ambitious People Build Great Products — and <span class="grad-text">Grow Fast</span>
       </h1>
       <p class="hero-pro-sub">
-        iTrend Solution is a global product-technology company. For nine years, our 60+ specialists
-        have designed, built, and shipped their own products worldwide — and built their own careers
-        here, learning across crafts and growing faster than they thought possible.
+        iTrend Solution is a global technology company built on the people inside it. Since 2016,
+        our teams have grown by learning across crafts, taking on real ownership early, and
+        building careers faster than they thought possible.
       </p>
-    </div>
-
-    <div class="hero-pro-stats" data-aos="fade-up" data-aos-delay="80">
-      <div class="hstat glass"><h3 class="stat-number" data-count="9" data-suffix="+">9+</h3><p>Years of Operations</p></div>
-      <div class="hstat glass"><h3 class="stat-number" data-count="8" data-suffix="">8</h3><p>Specialist Teams</p></div>
-      <div class="hstat glass"><h3 class="stat-number" data-count="7" data-suffix="+">7+</h3><p>Countries</p></div>
-      <div class="hstat glass"><h3 class="stat-number" data-count="4" data-suffix="">4</h3><p>Continents</p></div>
     </div>
   </div>
 </section>
@@ -120,8 +113,8 @@
     <div class="section-label" data-aos="fade-up">Who We Are</div>
     <div class="about-grid">
       <div class="about-text">
-        <h2 class="section-title" data-aos="fade-up">A product company at <em>heart</em></h2>
-        <p class="tagline-lead" data-aos="fade-up" data-aos-delay="50">iTrend Solution is a global product-technology company. Since 2016, our 60+ specialists have designed, built, and shipped their own products worldwide — powered by our Chennai Head Office and an India-based R&amp;D practice.</p>
+        <h2 class="section-title" data-aos="fade-up">A company built on its <em>people</em></h2>
+        <p class="tagline-lead" data-aos="fade-up" data-aos-delay="50">iTrend Solution has grown from a small team in Chennai into a global technology company — built entirely on the people inside it. We develop our own expertise, our own teams, and our own way of working.</p>
         <p data-aos="fade-up" data-aos-delay="100">Our people span Software Development, Research &amp; Development, Product Sourcing, Cataloguing, Content &amp; Design, Supply Chain, and Operations — a rare place to learn many crafts and grow fast, all under one roof.</p>
         <div class="about-pillars">
           <div class="pillar" data-aos="fade-up" data-aos-delay="120">

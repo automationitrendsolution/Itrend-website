@@ -7,7 +7,7 @@
           <img src="<?= asset('assets/img/itrend-logo.png') ?>" alt="iTrend Solution" class="footer-logo-img">
         </a>
         <p class="footer-about">
-          A global product-technology company manufacturing products and building platforms that scale brands across the USA, Canada, United Kingdom, Germany, and Brazil. 9+ years. 60+ specialists. One vision.
+          iTrend Solution is a global technology company built on the people inside it. Since 2016, we have grown by learning together — developing our own teams, our own expertise, and our own way of working. One company. One vision.
         </p>
         <div class="footer-socials">
           <a href="https://www.linkedin.com/company/itrendsolution" target="_blank" rel="noopener" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
@@ -23,11 +23,8 @@
         <ul class="footer-links">
           <li><a href="<?= url('/about') ?>">About Us</a></li>
           <li><a href="<?= url('/#what-we-do') ?>">What We Do</a></li>
-          <li><a href="<?= url('/#segments') ?>">Product Segments</a></li>
-          <li><a href="<?= url('/#presence') ?>">Global Presence</a></li>
           <li><a href="<?= url('/careers') ?>">Careers</a></li>
           <li><a href="<?= url('/contact') ?>">Contact</a></li>
-          <li><a href="<?= asset('assets/downloads/iTrend-Company-Brochure-2025.pdf') ?>" target="_blank" rel="noopener">Company Brochure</a></li>
         </ul>
       </div>
 
