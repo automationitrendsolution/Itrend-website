@@ -57,7 +57,7 @@
 </div>
 
 <!-- Career Application -->
-<div class="modal fade glass-modal-wrap" id="careerModal" tabindex="-1" aria-labelledby="careerModalLabel" aria-hidden="true">
+<div class="modal fade glass-modal-wrap modal-wide" id="careerModal" tabindex="-1" aria-labelledby="careerModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered"><div class="modal-content">
     <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close"><i class="bi bi-x-lg"></i></button>
     <div>
@@ -82,7 +82,8 @@
         <input type="text" name="experience" autocomplete="off" placeholder="Years of experience (if any)">
       </div>
       <input type="tel" name="phone" autocomplete="tel" placeholder="Phone Number *" required>
-      <select name="role" autocomplete="off" required>
+      <input type="url" name="linkedin" autocomplete="url" placeholder="LinkedIn / Portfolio URL">
+      <select name="role" class="span-2" autocomplete="off" required>
         <option value="" disabled selected>Role of interest *</option>
         <option>Data Analyst</option>
         <option>Full Stack Developer</option>
@@ -97,7 +98,6 @@
         <option>Human Resources</option>
         <option>Other</option>
       </select>
-      <input type="url" name="linkedin" autocomplete="url" placeholder="LinkedIn / Portfolio URL">
       <label class="file-upload">
         <input type="file" name="resume" accept=".pdf,.doc,.docx" required>
         <span class="file-upload-content">

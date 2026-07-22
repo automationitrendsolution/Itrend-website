@@ -125,11 +125,11 @@ h1, h2, h3, .stat-number {
 .hero-mesh {
   position: absolute; inset: 0; z-index: 1;
   background:
-    radial-gradient(55% 70% at 12% 18%, rgba(124,46,133,0.55), transparent 62%),
-    radial-gradient(50% 65% at 88% 72%, rgba(238,148,47,0.38), transparent 62%),
-    radial-gradient(45% 55% at 60% 8%, rgba(238,148,47,0.24), transparent 62%),
-    linear-gradient(90deg, rgba(10,10,20,0.82) 0%, rgba(10,10,20,0.62) 42%, rgba(10,10,20,0.18) 72%, transparent 100%),
-    linear-gradient(180deg, rgba(10,10,20,0.32) 0%, rgba(10,10,20,0.56) 55%, rgba(10,10,20,0.88) 100%);
+    radial-gradient(55% 70% at 18% 16%, rgba(124,46,133,0.50), transparent 62%),
+    radial-gradient(50% 65% at 82% 78%, rgba(238,148,47,0.34), transparent 62%),
+    radial-gradient(45% 55% at 50% 6%, rgba(238,148,47,0.20), transparent 62%),
+    linear-gradient(90deg, rgba(10,10,20,0.70) 0%, rgba(10,10,20,0.46) 30%, rgba(10,10,20,0.46) 70%, rgba(10,10,20,0.70) 100%),
+    linear-gradient(180deg, rgba(10,10,20,0.42) 0%, rgba(10,10,20,0.58) 55%, rgba(10,10,20,0.88) 100%);
   animation: meshShift 16s ease-in-out infinite alternate;
 }
 .hero-grid-overlay { z-index: 1; }
@@ -139,14 +139,18 @@ h1, h2, h3, .stat-number {
   background-image: linear-gradient(rgba(255,255,255,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.08) 1px, transparent 1px);
   background-size: 54px 54px; mask-image: radial-gradient(circle at 50% 40%, #000 30%, transparent 80%);
 }
-.hero-pro-inner { position: relative; z-index: 1; display: grid; grid-template-columns: 1fr; gap: 3rem; align-items: center; padding: 8rem 0 6rem; }
+/* Vertical padding only — the shorthand would zero out .container's side padding.
+   Override Bootstrap's 1320px .container cap so the hero fills wide displays. */
+.hero-pro-inner { position: relative; z-index: 1; display: grid; grid-template-columns: 1fr; gap: 3rem; align-items: center; padding-block: 9rem 7rem; max-width: min(1600px, 92vw); }
+/* Single centred column — the hero is text-only, so it is balanced rather than left-hugging. */
+.hero-pro-content { max-width: 1240px; margin-inline: auto; text-align: center; }
 .hero-badge { display: inline-flex; align-items: center; gap: .55rem; padding: .5rem 1rem; border-radius: 999px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.16); color: #bdedd2; font-size: .82rem; font-weight: 600; backdrop-filter: blur(8px); }
 .hero-badge .pulse { width: 8px; height: 8px; border-radius: 50%; background: var(--pa); box-shadow: 0 0 0 0 rgba(238,148,47,.7); animation: pulse 2s infinite; }
 @keyframes pulse { 70%{box-shadow:0 0 0 10px rgba(238,148,47,0);} 100%{box-shadow:0 0 0 0 rgba(238,148,47,0);} }
-.hero-pro-title { margin: 1.4rem 0 1.2rem; font-size: clamp(2.2rem, 5vw, 3.9rem); line-height: 1.08; font-weight: 800; color: #fff; max-width: 20ch; }
-.hero-pro-sub { color: #c9cede; font-size: clamp(1rem,1.4vw,1.18rem); line-height: 1.7; max-width: 62ch; margin: 0 0 2rem; }
+.hero-pro-title { margin: 1.6rem auto 1.3rem; font-size: clamp(2.05rem, 4.6vw, 3.9rem); line-height: 1.1; font-weight: 800; color: #fff; max-width: 34ch; text-wrap: balance; }
+.hero-pro-sub { color: #c9cede; font-size: clamp(.97rem,1.3vw,1.15rem); line-height: 1.7; max-width: 88ch; margin: 0 auto 2.6rem; text-wrap: pretty; }
 .hero-pro-sub strong { color: #fff; }
-.hero-pro-cta { display: flex; flex-wrap: wrap; gap: .9rem; align-items: center; }
+.hero-pro-cta { display: flex; flex-wrap: wrap; gap: .9rem; align-items: center; justify-content: center; }
 .hero-pro-cta .btn-ghost, .hero-pro-cta .btn-primary-glow { margin-top: 0; }
 .hero-pro .btn-ghost { background: rgba(255,255,255,0.07); color: #fff !important; border: 1px solid rgba(255,255,255,0.22); backdrop-filter: blur(8px); }
 .hero-pro .btn-ghost:hover { background: rgba(255,255,255,0.16); color: #fff !important; border-color: rgba(255,255,255,.4); }
@@ -302,7 +306,7 @@ h1, h2, h3, .stat-number {
    RESPONSIVE
    ===================================================================== */
 @media (max-width: 991px) {
-  .hero-pro-inner { grid-template-columns: 1fr; gap: 2.5rem; padding: 7rem 0 4rem; text-align: center; }
+  .hero-pro-inner { grid-template-columns: 1fr; gap: 2.5rem; padding-block: 7rem 4rem; text-align: center; }
   .hero-pro-cta, .hero-trust-row { justify-content: center; }
   .hero-pro-title, .hero-pro-sub { margin-left: auto; margin-right: auto; }
   /* Text is centred here, so the left-weighted scrim becomes an even wash. */
@@ -481,7 +485,8 @@ img, video, svg, iframe { max-width: 100%; }
 
 /* ---- Large desktop (≥1400px): a touch more breathing room ---- */
 @media (min-width: 1400px) {
-  .hero-pro-title { font-size: 4.1rem; }
+  .hero-pro-title { font-size: 3.9rem; }
+  .hero-pro-content { max-width: 1320px; }
 }
 
 /* ---- Laptop / small desktop (≤1199px) ---- */
@@ -493,7 +498,7 @@ img, video, svg, iframe { max-width: 100%; }
 /* ---- Tablet landscape (≤991px) ---- */
 @media (max-width: 991px) {
   .hero-pro { min-height: auto; }
-  .hero-pro-inner { grid-template-columns: 1fr; gap: 2.4rem; padding: 7.5rem 0 4rem; text-align: center; }
+  .hero-pro-inner { grid-template-columns: 1fr; gap: 2.4rem; padding-block: 7.5rem 4rem; text-align: center; }
   .hero-pro-cta, .hero-trust-row { justify-content: center; }
   .hero-pro-title, .hero-pro-sub { margin-left: auto; margin-right: auto; }
   .hero-pro-stats { max-width: 520px; margin: 0 auto; }
@@ -652,7 +657,7 @@ img, video, svg, iframe { max-width: 100%; }
 @media (max-width: 480px) {
   html { font-size: 14px; }
   .dark-canvas > section { padding-top: 2.3rem !important; padding-bottom: 2.3rem !important; padding-left: .95rem !important; padding-right: .95rem !important; }
-  .hero-pro-inner { padding: 6.5rem 0 3rem; }
+  .hero-pro-inner { padding-block: 6.5rem 3rem; }
   .hero-badge { font-size: .72rem; }
   .worldmap { padding: 1rem .7rem !important; }
   .glass, .reason-card, .trust-card, .career-perk, .industry-chip, .product-card, .contact-card { border-radius: 16px; }
@@ -956,6 +961,15 @@ html { scroll-behavior: auto !important; }
 .modal-form .form-actions .btn-primary-glow{flex:1 1 auto;justify-content:center;white-space:nowrap}
 .modal-form .form-actions .btn-reset{flex:0 0 auto;white-space:nowrap}
 @media(max-width:380px){.modal-form .form-actions .btn-primary-glow .arrow{display:none}}
+/* Wide modal: don't stretch the submit button across 940px — size both to content
+   and right-align the pair, with the primary action last. */
+.modal-wide .modal-form .form-actions{justify-content:flex-end;gap:.7rem}
+.modal-wide .modal-form .form-actions .btn-primary-glow{flex:0 0 auto;width:auto;order:2}
+.modal-wide .modal-form .form-actions .btn-reset{order:1}
+@media(max-width:767px){
+  .modal-wide .modal-form .form-actions{flex-wrap:wrap;justify-content:stretch}
+  .modal-wide .modal-form .form-actions .btn-primary-glow{flex:1 1 auto}
+}
 
 /* Drag-over state for the résumé upload box */
 .file-upload.dragover{border-color:var(--pi)!important;background:rgba(179,65,127,.06)!important}

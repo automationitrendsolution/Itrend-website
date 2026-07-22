@@ -14,13 +14,18 @@
     <div class="hero-pro-content" data-aos="fade-up">
       <span class="hero-badge"><span class="pulse"></span> Global Product Technology Company · Since 2016</span>
       <h1 class="hero-pro-title">
-        Where Ambitious People Build Great Products — and <span class="grad-text">Grow Fast</span>
+        <?php /* NBSP keeps the em-dash tied to "Products" so it never begins a wrapped line. */ ?>
+        Where Ambitious People Build Great&nbsp;Products&nbsp;— and <span class="grad-text">Grow&nbsp;Fast</span>
       </h1>
       <p class="hero-pro-sub">
         iTrend Solution is a global technology company built on the people inside it. Since 2016,
         our teams have grown by learning across crafts, taking on real ownership early, and
         building careers faster than they thought possible.
       </p>
+      <div class="hero-pro-cta">
+        <a href="<?= url('/careers') ?>" class="btn-primary-glow">Explore Careers <span class="arrow">→</span></a>
+        <a href="<?= url('/about') ?>" class="btn-ghost">About iTrend</a>
+      </div>
     </div>
   </div>
 </section>
