@@ -93,6 +93,10 @@ final class Mailer
         } catch (\Throwable $e) {
             // PHPMailer's ErrorInfo is the most descriptive; fall back to the exception.
             self::$lastError = ($mail->ErrorInfo !== '') ? $mail->ErrorInfo : $e->getMessage();
+            Log::error('[mail] send failed: ' . self::$lastError, [
+                'host' => Config::get('MAIL_HOST', ''),
+                'port' => Config::get('MAIL_PORT', ''),
+            ]);
             error_log('[mail] ' . self::$lastError);
             return false;
         }

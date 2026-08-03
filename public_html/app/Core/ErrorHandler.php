@@ -110,6 +110,19 @@ final class ErrorHandler
             $entry .= "\n  trace: " . str_replace("\n", "\n  ", $trace);
         }
         error_log($entry);
+
+        // Also write to the resilient daily log. error_log() above silently
+        // discards everything when ini error_log points at an unwritable path
+        // (the usual cause of "500 with an empty log" on cPanel); Log falls
+        // back through storage/ → above-root → system temp until one works.
+        Log::write(
+            str_starts_with($kind, 'PHP ') ? 'warning' : 'error',
+            $kind . ': ' . $message,
+            array_filter([
+                'area'  => $file !== '' ? $file . ':' . $line : null,
+                'trace' => $trace,
+            ], static fn ($v) => $v !== null)
+        );
     }
 
     /** Render the branded error page (or JSON for API/AJAX), guarded against re-entry. */

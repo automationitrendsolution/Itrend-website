@@ -63,6 +63,43 @@ $map = [
 
 http_response_code($code);
 
+/**
+ * Record the server-level error BEFORE touching the framework.
+ *
+ * Apache hands us its own 5xx (bad .htaccess, PHP-FPM startup failure, a parse
+ * error in bootstrap.php) — none of which ever reach App\Core\ErrorHandler,
+ * because the app never got to boot. This block is the only place those get
+ * captured, so it must stand entirely on its own: no autoloader, no config,
+ * plain file_put_contents into the first writable directory.
+ */
+(static function (int $code): void {
+    $candidates = [
+        __DIR__ . '/storage/logs',
+        dirname(__DIR__) . '/logs',
+        sys_get_temp_dir() . '/itrend-logs',
+    ];
+    $line = sprintf(
+        "[%s] SERVER-ERROR: HTTP %d%s | %s %s | ip %s | referer %s\n",
+        date('Y-m-d H:i:s'),
+        $code,
+        // Apache exposes the original target + the underlying reason here.
+        isset($_SERVER['REDIRECT_URL']) ? ' on ' . str_replace(["\r", "\n"], ' ', (string) $_SERVER['REDIRECT_URL']) : '',
+        $_SERVER['REQUEST_METHOD'] ?? '-',
+        str_replace(["\r", "\n"], ' ', (string) ($_SERVER['REQUEST_URI'] ?? '-')),
+        $_SERVER['REMOTE_ADDR'] ?? '-',
+        str_replace(["\r", "\n"], ' ', (string) ($_SERVER['HTTP_REFERER'] ?? '-'))
+    );
+    foreach ($candidates as $dir) {
+        if (!is_dir($dir) && !@mkdir($dir, 0755, true) && !is_dir($dir)) {
+            continue;
+        }
+        if (is_writable($dir) && @file_put_contents($dir . '/app-' . date('Y-m-d') . '.log', $line, FILE_APPEND | LOCK_EX) !== false) {
+            return;
+        }
+    }
+    error_log('[itrend] ' . trim($line)); // nothing writable — hand it to the host log
+})($code);
+
 try {
     require __DIR__ . '/app/bootstrap.php';
     echo App\Core\View::render('error', [

@@ -57,7 +57,15 @@ $debug = Config::bool('APP_DEBUG', false);
 error_reporting(E_ALL);
 ini_set('display_errors', $debug ? '1' : '0');
 ini_set('log_errors', '1');
-ini_set('error_log', STORAGE_PATH . '/logs/php_error.log');
+
+// Point PHP's own error_log at the first writable destination. Pointing it at
+// an unwritable path makes PHP discard every log line without complaint, which
+// is why a cPanel 500 so often comes with an empty log file. Log::path()
+// resolves storage/logs → ../logs → system temp, whichever works.
+$logDir = \App\Core\Log::path();
+if ($logDir !== null) {
+    ini_set('error_log', $logDir . '/php_error.log');
+}
 
 // ---- Global exception / error / fatal handler (branded page + area-tagged logs) ----
 \App\Core\ErrorHandler::register();

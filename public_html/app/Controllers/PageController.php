@@ -66,11 +66,17 @@ final class PageController extends Controller
         $storageWritable = is_writable(STORAGE_PATH . '/cache') && is_writable(STORAGE_PATH . '/logs');
         $secretsFound    = defined('SECRETS_FILE') && SECRETS_FILE !== '';
 
+        $logDir = \App\Core\Log::path();
+
         $checks = [
             'php'     => PHP_VERSION,
             'mail'    => \App\Core\Mailer::enabled() ? 'configured' : 'not-configured',
             'storage' => $storageWritable ? 'writable' : 'not-writable',
             'secrets' => $secretsFound ? 'found' : 'none',
+            // Where errors are actually being recorded. If this says "none",
+            // nothing is being logged anywhere and a 500 will look silent —
+            // chmod public_html/storage/logs to 0755 (or 0775) to fix it.
+            'logging' => $logDir === null ? 'none' : \App\Core\Log::source(),
         ];
         // "ok" only when the things that would actually break delivery are in order.
         $ok = $storageWritable && \App\Core\Mailer::enabled();
@@ -78,6 +84,11 @@ final class PageController extends Controller
         $this->json([
             'status' => $ok ? 'ok' : 'check-config',
             'checks' => $checks,
+            'log'    => [
+                'dir'       => $logDir,
+                'today'     => $logDir !== null ? $logDir . '/app-' . date('Y-m-d') . '.log' : null,
+                'php_error' => ini_get('error_log') ?: null,
+            ],
             'time'   => date('c'),
         ]);
     }

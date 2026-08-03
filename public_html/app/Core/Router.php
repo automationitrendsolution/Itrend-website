@@ -45,6 +45,7 @@ final class Router
         $class = 'App\\Controllers\\' . $controllerName;
 
         if (!class_exists($class) || !method_exists($class, $action)) {
+            Log::error('[router] handler not found', ['handler' => $handler, 'route' => $method . ' ' . $path]);
             $this->serverError($request, "Handler $handler not found");
             return;
         }
@@ -53,6 +54,14 @@ final class Router
             $controller = new $class();
             $controller->$action($request);
         } catch (\Throwable $e) {
+            // Controller exceptions are caught here, so they never reach
+            // ErrorHandler::handleException — log them with the same detail
+            // (class, area, full trace) or a 500 leaves no usable trail.
+            Log::error('[router] ' . (new \ReflectionClass($e))->getShortName() . ': ' . $e->getMessage(), [
+                'route' => $method . ' ' . $path,
+                'area'  => $e->getFile() . ':' . $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
             error_log('[router] ' . $e->getMessage() . ' @ ' . $e->getFile() . ':' . $e->getLine());
             $this->serverError($request, $e->getMessage());
         }
