@@ -1739,7 +1739,7 @@ footer::before {
 /* ---- Wide modal: long forms lay out horizontally instead of one tall column.
    Applied to the career application, which has 8 fields + an upload. ---- */
 .glass-modal-wrap.modal-wide .modal-dialog { max-width: 940px; }
-.glass-modal-wrap.modal-wide .modal-content { padding: 2.4rem 2.4rem 2rem; }
+.glass-modal-wrap.modal-wide .modal-content { padding: 1.3rem 2.4rem 2rem; }
 
 /* Two-column field grid; items marked .span-2 run the full width. */
 .modal-wide .modal-form { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 1rem; row-gap: .9rem; align-items: start; }
@@ -3077,8 +3077,10 @@ footer::before {
   align-self: flex-end;
   /* The bottom margin is the gap between the button and the "JOIN THE TEAM"
      badge below it — the button sits in the flow, so this is what separates
-     the header from the modal's top edge. */
-  margin: 0 0 1.15rem auto;
+     the header from the modal's top edge. The small negative top margin pulls
+     the button up snug against the modal's top padding; without it the button
+     floats in dead space at the top of the dialog. */
+  margin: -0.25rem 0 2.25rem auto;
   z-index: 30;
   flex: 0 0 auto;
   /* Paint the bar with a wide spread, clipped so it stops short of the modal's
