@@ -416,6 +416,33 @@
     startBeat();
   })();
 
+  /* ---------- 4g. Modal a11y: never leave focus inside an aria-hidden modal ----------
+     Bootstrap stamps aria-hidden="true" back onto the modal as it closes. If the
+     element that triggered the close (usually the × button) still holds focus at
+     that moment, the browser logs "Blocked aria-hidden on an element because its
+     descendant retained focus" and screen-reader users are stranded on a hidden
+     node. Dropping focus before the hide completes — then handing it back to
+     whatever opened the modal — resolves both problems. */
+  document.querySelectorAll('.modal').forEach(function (modalEl) {
+    var opener = null;
+    modalEl.addEventListener('show.bs.modal', function (e) {
+      opener = e.relatedTarget || document.activeElement;
+    });
+    modalEl.addEventListener('hide.bs.modal', function () {
+      var active = document.activeElement;
+      if (active && modalEl.contains(active) && typeof active.blur === 'function') {
+        active.blur();
+      }
+    });
+    modalEl.addEventListener('hidden.bs.modal', function () {
+      // Return focus to the trigger so keyboard users keep their place.
+      if (opener && document.contains(opener) && typeof opener.focus === 'function') {
+        opener.focus({ preventScroll: true });
+      }
+      opener = null;
+    });
+  });
+
   /* ---------- 5. AJAX form submission (CSRF-aware, graceful) ---------- */
   function showError(form, msg) {
     var box = form.querySelector('.js-form-msg');
@@ -460,9 +487,74 @@
     }
   }
 
+  /* reCAPTCHA v2 helpers.
+     Each token is single-use and expires ~2 minutes after the box is ticked, so
+     the widget must be reset after every submit — otherwise a second send fails
+     server-side with "timeout-or-duplicate". grecaptcha may not have loaded yet
+     (async script), so every call is guarded. */
+  function recaptchaWidget(form) {
+    return form.querySelector('.g-recaptcha');
+  }
+  function recaptchaId(form) {
+    var el = recaptchaWidget(form);
+    if (!el) return null;
+    // Google stamps the rendered widget id on the container as data-widget-id;
+    // fall back to index-in-page order for older API builds.
+    var id = el.getAttribute('data-widget-id');
+    if (id !== null && id !== '') return Number(id);
+    var all = Array.prototype.slice.call(document.querySelectorAll('.g-recaptcha'));
+    var idx = all.indexOf(el);
+    return idx >= 0 ? idx : null;
+  }
+  function recaptchaAnswered(form) {
+    var el = recaptchaWidget(form);
+    if (!el) return true; // reCAPTCHA not enabled on this site — nothing to check
+    if (window.grecaptcha && typeof window.grecaptcha.getResponse === 'function') {
+      var id = recaptchaId(form);
+      try {
+        return (id === null ? window.grecaptcha.getResponse() : window.grecaptcha.getResponse(id)) !== '';
+      } catch (err) { /* widget not rendered yet — fall through */ }
+    }
+    // Fallback: the hidden textarea Google injects carries the token.
+    var ta = form.querySelector('textarea[name="g-recaptcha-response"]');
+    return !!(ta && ta.value);
+  }
+  function recaptchaReset(form) {
+    if (!recaptchaWidget(form)) return;
+    if (window.grecaptcha && typeof window.grecaptcha.reset === 'function') {
+      var id = recaptchaId(form);
+      try { id === null ? window.grecaptcha.reset() : window.grecaptcha.reset(id); } catch (err) { /* ignore */ }
+    }
+  }
+  // Show/clear the "required" marker beside the widget.
+  function recaptchaFlagMissing(form, missing) {
+    var wrap = form.querySelector('.form-recaptcha');
+    if (!wrap) return;
+    wrap.classList.toggle('is-missing', !!missing);
+    var err = wrap.querySelector('.recaptcha-error');
+    if (err) { err.hidden = !missing; }
+  }
+
   document.querySelectorAll('form.js-form').forEach(function (form) {
     var btn = form.querySelector('button[type="submit"]');
     var label = btn ? btn.innerHTML : '';
+
+    // Reset clears the widget along with the fields.
+    form.addEventListener('reset', function () {
+      setTimeout(function () { recaptchaReset(form); recaptchaFlagMissing(form, false); }, 0);
+    });
+
+    // Clear the "required" marker as soon as the box is actually ticked. The
+    // tick happens inside Google's iframe, so there's no event to listen for —
+    // a light poll runs only while the marker is showing.
+    if (form.querySelector('.form-recaptcha')) {
+      setInterval(function () {
+        var wrap = form.querySelector('.form-recaptcha');
+        if (wrap && wrap.classList.contains('is-missing') && recaptchaAnswered(form)) {
+          recaptchaFlagMissing(form, false);
+        }
+      }, 500);
+    }
 
     function send() {
       var endpoint = form.getAttribute('data-endpoint') || form.getAttribute('action');
@@ -486,6 +578,8 @@
           if (res && res.token) {
             form.querySelectorAll('input[name="_csrf"]').forEach(function (inp) { inp.value = res.token; });
           }
+          // The token just spent is now dead either way — arm a fresh challenge.
+          recaptchaReset(form);
           if (res && res.ok) {
             succeed(form);
           } else {
@@ -510,6 +604,16 @@
         showError(form, 'Please fill in all required fields marked with *.');
         return;
       }
+      // Require the "I'm not a robot" tick before spending a request — the
+      // server enforces this too, this just fails fast with a clear marker.
+      if (!recaptchaAnswered(form)) {
+        recaptchaFlagMissing(form, true);
+        showError(form, 'Please confirm you are not a robot before submitting.');
+        var wrap = form.querySelector('.form-recaptcha');
+        if (wrap && wrap.scrollIntoView) { wrap.scrollIntoView({ block: 'center', behavior: reduce ? 'auto' : 'smooth' }); }
+        return;
+      }
+      recaptchaFlagMissing(form, false);
       send();
     });
   });

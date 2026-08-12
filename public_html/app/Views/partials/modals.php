@@ -32,6 +32,7 @@
       </select>
       <textarea name="message" autocomplete="off" rows="4" placeholder="Tell us about your goals"></textarea>
       <div class="form-spacer" aria-hidden="true"></div>
+      <?= recaptcha_field() ?>
       <div class="form-actions">
         <button type="submit" class="btn-primary-glow">Send Message <span class="arrow">→</span></button>
         <button type="reset" class="btn-reset"><i class="bi bi-arrow-counterclockwise"></i> Reset</button>
@@ -110,6 +111,7 @@
         </span>
       </label>
       <textarea name="cover" autocomplete="off" rows="3" placeholder="A short note about yourself"></textarea>
+      <?= recaptcha_field() ?>
       <div class="form-actions">
         <button type="submit" class="btn-primary-glow">Submit Application <span class="arrow">→</span></button>
         <button type="reset" class="btn-reset"><i class="bi bi-arrow-counterclockwise"></i> Reset</button>

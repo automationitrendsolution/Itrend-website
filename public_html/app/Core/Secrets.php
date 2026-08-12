@@ -32,6 +32,9 @@ final class Secrets
         'mail.from'       => 'MAIL_FROM',
         'mail.from_name'  => 'MAIL_FROM_NAME',
         'mail.to'         => 'MAIL_TO',
+        'recaptcha.enabled'    => 'RECAPTCHA_ENABLED',
+        'recaptcha.site_key'   => 'RECAPTCHA_SITE_KEY',
+        'recaptcha.secret_key' => 'RECAPTCHA_SECRET_KEY',
     ];
 
     public static function load(string $path): void

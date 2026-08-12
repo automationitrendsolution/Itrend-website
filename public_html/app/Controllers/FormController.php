@@ -9,12 +9,13 @@ use App\Core\Controller;
 use App\Core\Csrf;
 use App\Core\Mailer;
 use App\Core\RateLimiter;
+use App\Core\Recaptcha;
 use App\Core\Request;
 use App\Core\Validator;
 
 /**
  * Handles all public form posts with a uniform security pipeline:
- * CSRF → honeypot → rate-limit → validation → (upload) → email.
+ * CSRF → honeypot → reCAPTCHA → rate-limit → validation → (upload) → email.
  * This is the public landing site: submissions are emailed to HR only — no database.
  */
 final class FormController extends Controller
@@ -139,21 +140,30 @@ final class FormController extends Controller
             return;
         }
 
-        // 3. Rate limit
         $ip = $request->ip();
+
+        // 3. Google reCAPTCHA v2 — the "I'm not a robot" checkbox. Passes straight
+        //    through when reCAPTCHA is not configured, and fails open if Google
+        //    itself is unreachable.
+        if (!Recaptcha::verify($request->input('g-recaptcha-response'), $type, $ip)) {
+            $this->respond($request, false, Recaptcha::failureMessage(), 422);
+            return;
+        }
+
+        // 4. Rate limit
         if (RateLimiter::tooManyAttempts($ip, $type, self::RATE_MAX, self::RATE_WINDOW)) {
             $this->respond($request, false, 'Too many requests. Please try again later.', 429);
             return;
         }
 
-        // 4. Validation
+        // 5. Validation
         $validator = new Validator($request->all());
         if (!$validator->validate($rules)) {
             $this->respond($request, false, $validator->firstError() ?? 'Please check the form.', 422, $validator->errors());
             return;
         }
 
-        // 5. Map + (optional) upload
+        // 6. Map + (optional) upload
         try {
             $payload = $mapper($request);
         } catch (\RuntimeException $e) {
@@ -166,7 +176,7 @@ final class FormController extends Controller
         $payload['user_agent'] = $request->userAgent();
         RateLimiter::hit($ip, $type);
 
-        // 6. Email the submission to HR (this landing site stores nothing — email only).
+        // 7. Email the submission to HR (this landing site stores nothing — email only).
         $this->notify($type, $payload);
 
         // Never keep uploaded files on disk — remove the temp resume regardless of mail state.

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Core\Config;
 use App\Core\Csrf;
+use App\Core\Recaptcha;
 use App\Core\View;
 
 /** HTML-escape for safe output. Use everywhere user/dynamic data is printed. */
@@ -36,6 +37,31 @@ function csrf_field(): string
 function csrf_token(): string
 {
     return Csrf::token();
+}
+
+/**
+ * Render the reCAPTCHA v2 "I'm not a robot" widget for a form.
+ * Outputs nothing when reCAPTCHA is not configured, so forms keep working
+ * unchanged on a local/dev setup without keys.
+ */
+function recaptcha_field(): string
+{
+    if (!Recaptcha::enabled()) {
+        return '';
+    }
+    // The widget is genuinely required — the server rejects any post without a
+    // valid token — so it carries the same "*" marker as the other mandatory
+    // fields, and an error slot the JS fills in when someone skips it.
+    return '<div class="form-recaptcha">'
+        . '<div class="g-recaptcha" data-sitekey="' . e(Recaptcha::siteKey()) . '"></div>'
+        . '<p class="recaptcha-error" role="alert" hidden>Please confirm you are not a robot.</p>'
+        . '</div>';
+}
+
+/** True when the reCAPTCHA script should be loaded on the page. */
+function recaptcha_enabled(): bool
+{
+    return Recaptcha::enabled();
 }
 
 /** Include a shared partial. */

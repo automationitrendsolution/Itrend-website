@@ -56,6 +56,7 @@
             <option>Multiple / Not sure</option>
           </select>
           <textarea name="message" autocomplete="off" rows="5" placeholder="How can we help?"></textarea>
+          <?= recaptcha_field() ?>
           <div class="form-actions">
             <button type="submit" class="btn-primary-glow">Send Message <span class="arrow">→</span></button>
             <button type="reset" class="btn-reset"><i class="bi bi-arrow-counterclockwise"></i> Reset</button>

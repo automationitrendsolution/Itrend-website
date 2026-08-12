@@ -1695,6 +1695,47 @@ footer::before {
   margin: 1.75rem auto;
 }
 
+/* ---- Keep a tall modal inside the window, at ANY viewport height ----
+   The career form (8 fields + upload + note + reCAPTCHA) is taller than a
+   laptop viewport. Two things are needed and BOTH matter:
+     1. cap the height so the dialog can never exceed the window, and
+     2. give .modal-dialog `height:auto` + flex, because Bootstrap's
+        .modal-dialog-centered uses `min-height: calc(100% - 3.5rem)`, which
+        fights the cap and lets the bottom (the submit row) clip off-screen.
+   Uses dvh where supported so mobile browser toolbars are accounted for.
+   Deliberately unconditional — no media query — so it holds at every height
+   and every zoom level rather than only inside a breakpoint. */
+.glass-modal-wrap .modal-dialog {
+  max-height: calc(100vh - 2rem);
+  max-height: calc(100dvh - 2rem);
+  height: auto;
+  display: flex;
+  align-items: center;
+}
+/* Bootstrap centres via `min-height: calc(100% - 3.5rem)`. Keep that so the
+   dialog stays vertically centred on a tall window, but let it SHRINK below
+   that when the window is short — otherwise the min-height wins over the cap
+   above and the submit row clips off the bottom of the screen. */
+.glass-modal-wrap .modal-dialog.modal-dialog-centered {
+  min-height: min(calc(100% - 3.5rem), calc(100vh - 2rem));
+  min-height: min(calc(100% - 3.5rem), calc(100dvh - 2rem));
+}
+.glass-modal-wrap .modal-content {
+  max-height: calc(100vh - 2rem);
+  max-height: calc(100dvh - 2rem);
+  width: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+/* Slim on-brand scrollbar instead of the default chunky one. */
+.glass-modal-wrap .modal-content::-webkit-scrollbar { width: 8px; }
+.glass-modal-wrap .modal-content::-webkit-scrollbar-track { background: rgba(124,46,133,.06); border-radius: 99px; }
+.glass-modal-wrap .modal-content::-webkit-scrollbar-thumb { background: rgba(124,46,133,.32); border-radius: 99px; }
+.glass-modal-wrap .modal-content::-webkit-scrollbar-thumb:hover { background: rgba(124,46,133,.55); }
+.glass-modal-wrap .modal-content { scrollbar-width: thin; scrollbar-color: rgba(124,46,133,.32) rgba(124,46,133,.06); }
+
+/* On short windows, tighten the chrome so the form still fits. */
+
 /* ---- Wide modal: long forms lay out horizontally instead of one tall column.
    Applied to the career application, which has 8 fields + an upload. ---- */
 .glass-modal-wrap.modal-wide .modal-dialog { max-width: 940px; }
@@ -1771,7 +1812,10 @@ footer::before {
     0 4px 12px rgba(0, 0, 0, 0.05),
     inset 0 1px 0 rgba(255, 255, 255, 0.95);
   position: relative;
-  overflow: hidden;
+  /* overflow-x only: a blanket `overflow: hidden` here would cancel the
+     vertical scrolling set up above and let tall modals run off-screen. */
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .glass-modal-wrap .modal-content::before {
@@ -3008,3 +3052,61 @@ footer::before {
 @media (max-width: 480px) {
   .awards-grid { grid-template-columns: 1fr; }
 }
+
+/* The modal keeps its full, roomy spacing at every window height — no shrinking
+   of fields, textarea or header. When the form is taller than the window it
+   simply scrolls inside the dialog (see the max-height cap near the top of this
+   file), which is why the close button below is sticky. */
+
+/* ---- Close button: sticky, on an opaque full-width bar ----
+   The button stays sticky inside .modal-content (it must remain a child there,
+   or Bootstrap's dismiss handling and the click target break). The overlap you
+   see when scrolling is fixed by giving it a solid bar that spans the modal's
+   full width: form rows scroll BEHIND that bar and are clipped in a clean
+   horizontal line, instead of being half-covered by a floating circle.
+   The bar is drawn with a wide box-shadow so no extra element is needed.
+   Appended at the end of the file so it outranks the base .modal-close rule. */
+/* The button is wrapped in a sticky bar. The BAR carries the opaque background
+   and the clipping; the BUTTON inside it keeps its own hover rotation. Keeping
+   them separate matters: the button's `transform: rotate(90deg)` on hover would
+   otherwise rotate the clip-path with it, shrinking the bar to a tilted square
+   and letting the fields behind show through. */
+.glass-modal-wrap .modal-close {
+  position: sticky;
+  top: 0;
+  align-self: flex-end;
+  /* The bottom margin is the gap between the button and the "JOIN THE TEAM"
+     badge below it — the button sits in the flow, so this is what separates
+     the header from the modal's top edge. */
+  margin: 0 0 1.15rem auto;
+  z-index: 30;
+  flex: 0 0 auto;
+  /* Paint the bar with a wide spread, clipped so it stops short of the modal's
+     rounded right edge — a full-bleed spread painted over the corner and the
+     scrollbar, which showed as a white strip down the right side. */
+  box-shadow: 0 0 0 100vmax #fff;
+  clip-path: inset(-2.6rem -1.35rem -1.45rem -100vmax);
+}
+[data-theme="dark"] .glass-modal-wrap .modal-close { box-shadow: 0 0 0 100vmax #121828; }
+/* Hover: recolour and rotate the icon only. The bar's box-shadow/clip-path are
+   re-stated so the base .modal-close:hover shadow can't replace them, and the
+   rotation is moved to the inner icon so the clip-path never rotates. */
+.glass-modal-wrap .modal-close:hover,
+.glass-modal-wrap .modal-close:focus-visible {
+  transform: none;
+  box-shadow: 0 0 0 100vmax #fff;
+  clip-path: inset(-2.6rem -1.35rem -1.45rem -100vmax);
+}
+[data-theme="dark"] .glass-modal-wrap .modal-close:hover,
+[data-theme="dark"] .glass-modal-wrap .modal-close:focus-visible {
+  box-shadow: 0 0 0 100vmax #121828;
+}
+.glass-modal-wrap .modal-close i {
+  transition: transform .35s cubic-bezier(.16,1,.3,1);
+}
+.glass-modal-wrap .modal-close:hover i,
+.glass-modal-wrap .modal-close:focus-visible i {
+  transform: rotate(90deg);
+}
+/* Reserve the scrollbar column so it doesn't shift the layout when it appears. */
+.glass-modal-wrap .modal-content { scrollbar-gutter: stable; }

@@ -990,6 +990,37 @@ html { scroll-behavior: auto !important; }
 /* Breathing space below the "Tell us about your goals" heading on the contact page */
 .contact-form-card .contact-title-gap{height:1.1rem}
 
+/* ===== Google reCAPTCHA v2 checkbox =====
+   The widget is a fixed 304x78 iframe Google renders; it cannot be resized, so
+   on narrow screens we scale it down from the left edge and claw back the gap
+   the transform leaves behind (transforms don't affect layout height). */
+/* Flush-left with the fields above it, full row of its own. */
+.form-recaptcha{margin:.15rem 0 .35rem;display:block;width:100%}
+.modal-form .form-recaptcha{margin:.1rem 0 .2rem}
+/* line-height:0 stops the iframe's inline-block baseline gap, which otherwise
+   reads as a stray few pixels under the widget. */
+.form-recaptcha .g-recaptcha{display:block;line-height:0;width:304px;max-width:100%}
+.form-recaptcha iframe{border-radius:6px}
+.recaptcha-error{margin:.4rem 0 0;color:#ef4444;font-size:.8rem;font-weight:600;line-height:1.4}
+.recaptcha-error[hidden]{display:none}
+/* A ring around the widget when the user tries to submit without ticking it. */
+.form-recaptcha.is-missing .g-recaptcha{border-radius:6px;box-shadow:0 0 0 2px #ef4444,0 0 0 6px rgba(239,68,68,.15)}
+/* The widget renders on a white card; keep it legible in dark mode without
+   recolouring Google's own iframe (which we're not allowed to touch). */
+[data-theme="dark"] .form-recaptcha .g-recaptcha{border-radius:6px;overflow:hidden}
+/* The widget is a fixed 304x78 iframe Google renders and it cannot be resized,
+   so on very narrow phones we scale it from the top-left and clamp the wrapper
+   height to match (transforms don't affect layout, so the leftover space would
+   otherwise show as a gap under the widget). */
+@media(max-width:380px){
+  .form-recaptcha .g-recaptcha{transform:scale(.88);transform-origin:0 0;height:78px}
+  .form-recaptcha{height:auto}
+  .form-recaptcha .g-recaptcha{margin-bottom:calc(78px * -0.12)}
+}
+@media(max-width:330px){
+  .form-recaptcha .g-recaptcha{transform:scale(.78);margin-bottom:calc(78px * -0.22)}
+}
+
 /* ===== Network-issue modal (connection lost) ===== */
 .net-modal-overlay{position:fixed;inset:0;z-index:20000;display:none;align-items:center;justify-content:center;background:rgba(15,18,30,.55);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);padding:1.2rem}
 .net-modal-overlay.show{display:flex}

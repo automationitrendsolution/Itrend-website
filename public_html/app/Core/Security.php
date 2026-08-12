@@ -54,15 +54,24 @@ final class Security
         // CSP — only the origins the site actually loads (AOS/CSS/JS are self-hosted).
         // object-src 'none' + base-uri 'self' + frame-ancestors 'self' kill the common
         // XSS/clickjacking/base-tag vectors; upgrade-insecure-requests forces HTTPS.
+        //
+        // google.com/gstatic.com appear in script-/frame-/connect-src only because
+        // reCAPTCHA v3 loads its script from www.google.com, pulls its runtime from
+        // www.gstatic.com, and posts the challenge from a hidden iframe.
+        $recaptcha = Recaptcha::enabled();
+        $gScript   = $recaptcha ? ' https://www.google.com https://www.gstatic.com' : '';
+        $gConnect  = $recaptcha ? ' https://www.google.com https://www.gstatic.com' : '';
+
         header(
             "Content-Security-Policy: default-src 'self'; "
-            . "script-src 'self'; "
+            . "script-src 'self'" . $gScript . '; '
             . "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
             . "font-src 'self' https://fonts.gstatic.com data:; "
             . "img-src 'self' data: https:; media-src 'self'; "
-            . "frame-src 'self' https://www.google.com https://maps.google.com; "
+            . "frame-src 'self' https://www.google.com https://maps.google.com https://recaptcha.google.com; "
             . "object-src 'none'; "
-            . "connect-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; "
+            . "connect-src 'self'" . $gConnect . '; '
+            . "base-uri 'self'; form-action 'self'; frame-ancestors 'self'; "
             . "upgrade-insecure-requests"
         );
         if (self::isHttps()) {

@@ -4,3 +4,7 @@
 <script src="<?= asset('assets/vendor/aos/aos.js') ?>"></script>
 <script src="<?= asset('assets/js/main.js') ?>"></script>
 <script src="<?= asset('assets/js/app.js') ?>"></script>
+<?php if (recaptcha_enabled()): ?>
+<!-- Google reCAPTCHA v2 (checkbox) — auto-renders every .g-recaptcha in the page -->
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+<?php endif; ?>
