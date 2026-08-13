@@ -49,18 +49,24 @@ final class Security
         header('Referrer-Policy: strict-origin-when-cross-origin');
         header('Permissions-Policy: geolocation=(), microphone=(), camera=(), payment=(), usb=(), browsing-topics=(), interest-cohort=()');
         header('Cross-Origin-Opener-Policy: same-origin');
-        header('Cross-Origin-Resource-Policy: same-origin');
+        // cross-origin: reCAPTCHA pulls its runtime from www.gstatic.com and runs
+        // the challenge in a www.google.com iframe; same-origin blocks both.
+        header('Cross-Origin-Resource-Policy: cross-origin');
         header('X-Permitted-Cross-Domain-Policies: none');
         // CSP — only the origins the site actually loads (AOS/CSS/JS are self-hosted).
         // object-src 'none' + base-uri 'self' + frame-ancestors 'self' kill the common
         // XSS/clickjacking/base-tag vectors; upgrade-insecure-requests forces HTTPS.
         //
         // google.com/gstatic.com appear in script-/frame-/connect-src only because
-        // reCAPTCHA v3 loads its script from www.google.com, pulls its runtime from
-        // www.gstatic.com, and posts the challenge from a hidden iframe.
+        // reCAPTCHA v2 loads its script from www.google.com, pulls its runtime from
+        // www.gstatic.com, and renders the checkbox/challenge in an iframe.
+        // recaptcha.net is Google's own mirror of the widget; it is used
+        // automatically in regions where google.com is unreachable, so it must be
+        // allowed alongside google.com or the widget silently fails for those users.
         $recaptcha = Recaptcha::enabled();
-        $gScript   = $recaptcha ? ' https://www.google.com https://www.gstatic.com' : '';
-        $gConnect  = $recaptcha ? ' https://www.google.com https://www.gstatic.com' : '';
+        $gScript   = $recaptcha ? ' https://www.google.com https://www.gstatic.com https://www.recaptcha.net' : '';
+        $gConnect  = $recaptcha ? ' https://www.google.com https://www.gstatic.com https://www.recaptcha.net' : '';
+        $gFrame    = $recaptcha ? ' https://www.google.com https://recaptcha.google.com https://www.recaptcha.net' : '';
 
         header(
             "Content-Security-Policy: default-src 'self'; "
@@ -68,7 +74,7 @@ final class Security
             . "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
             . "font-src 'self' https://fonts.gstatic.com data:; "
             . "img-src 'self' data: https:; media-src 'self'; "
-            . "frame-src 'self' https://www.google.com https://maps.google.com https://recaptcha.google.com; "
+            . "frame-src 'self' https://maps.google.com" . $gFrame . '; '
             . "object-src 'none'; "
             . "connect-src 'self'" . $gConnect . '; '
             . "base-uri 'self'; form-action 'self'; frame-ancestors 'self'; "

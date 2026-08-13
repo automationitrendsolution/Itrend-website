@@ -114,7 +114,9 @@ RedirectMatch 404 ^/workspace(/|$)
     Header always set Referrer-Policy "strict-origin-when-cross-origin"
     Header always set Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=(), usb=(), browsing-topics=(), interest-cohort=()"
     Header always set Cross-Origin-Opener-Policy "same-origin"
-    Header always set Cross-Origin-Resource-Policy "same-origin"
+    # cross-origin, not same-origin: reCAPTCHA loads its runtime from
+    # www.gstatic.com and runs its challenge in a www.google.com iframe.
+    Header always set Cross-Origin-Resource-Policy "cross-origin"
     Header always set X-Permitted-Cross-Domain-Policies "none"
     Header always set X-XSS-Protection "0"
     Header always unset X-Powered-By
@@ -122,8 +124,19 @@ RedirectMatch 404 ^/workspace(/|$)
     # HSTS — only meaningful over HTTPS; harmless over HTTP.
     Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" "expr=%{HTTPS} == 'on'"
 
-    # Content Security Policy — only the origins the site actually loads (AOS/CSS/JS self-hosted).
-    Header always set Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https:; media-src 'self'; frame-src 'self' https://www.google.com https://maps.google.com; object-src 'none'; connect-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests"
+    # ---- Content Security Policy ----
+    # IMPORTANT: two CSP headers are not "belt and braces" — the browser enforces
+    # the INTERSECTION of every policy it receives. A second header here saying
+    # script-src 'self' silently overrides PHP's google.com/gstatic.com grant and
+    # kills reCAPTCHA, which is exactly what happened in production (and never
+    # locally, because the dev router does not read .htaccess).
+    #
+    # app/Core/Security.php owns the policy for every PHP response and widens it
+    # only when reCAPTCHA is enabled. So set CSP here ONLY for static assets that
+    # PHP never serves, and let PHP be the single source of truth for pages.
+    <FilesMatch "\.(css|js|mjs|json|xml|txt|svg|png|jpe?g|gif|webp|avif|ico|woff2?|ttf|eot|mp4|webm)$">
+        Header always set Content-Security-Policy "default-src 'none'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; base-uri 'none'; frame-ancestors 'self'"
+    </FilesMatch>
 </IfModule>
 
 # ---- Long-cache static assets ----

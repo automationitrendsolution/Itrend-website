@@ -113,13 +113,18 @@ final class Recaptcha
         // These mean OUR configuration is broken (wrong/blank secret, malformed
         // request) rather than that the visitor is a bot — never punish a real
         // person for a server-side misconfiguration.
+        // 'invalid-keys' / hostname mismatch are the classic go-live failures:
+        // the domain was never added to the key's allow-list in the reCAPTCHA
+        // admin console, or staging keys were shipped to production.
         if (str_contains($codes, 'invalid-input-secret')
             || str_contains($codes, 'missing-input-secret')
+            || str_contains($codes, 'invalid-keys')
             || str_contains($codes, 'bad-request')
         ) {
-            Log::error('reCAPTCHA is misconfigured — allowing submission', [
-                'form'  => $type,
-                'codes' => $codes,
+            Log::error('reCAPTCHA is misconfigured — allowing submission. Check that the secret key matches the site key and that this domain is listed in the reCAPTCHA admin console.', [
+                'form'   => $type,
+                'codes'  => $codes,
+                'host'   => $_SERVER['HTTP_HOST'] ?? '',
             ]);
             return true;
         }
