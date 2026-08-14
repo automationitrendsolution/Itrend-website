@@ -956,10 +956,25 @@ html { scroll-behavior: auto !important; }
 .file-upload-clear[hidden]{display:none}
 .file-upload-clear .bi{font-size:.72rem}
 
-/* Keep the Apply / form action buttons (Submit + Reset) on one line */
-.modal-form .form-actions{flex-wrap:nowrap;align-items:stretch}
+/* Keep the Apply / form action buttons (Submit + Reset) on one line.
+   align-items:center, not stretch: stretch made Reset grow to match the
+   taller Submit box, so the two buttons rendered at different heights.
+   Both are pinned to one height below instead. */
+.modal-form .form-actions{flex-wrap:nowrap;align-items:center}
 .modal-form .form-actions .btn-primary-glow{flex:1 1 auto;justify-content:center;white-space:nowrap}
 .modal-form .form-actions .btn-reset{flex:0 0 auto;white-space:nowrap}
+/* One height for every action button, in every form on the site.
+   The margin reset matters: .btn-primary-glow carries a default
+   margin-top elsewhere in this sheet, which pushed Submit ~3px below
+   Reset even once both were the same height. */
+.form-actions > .btn-primary-glow,
+.form-actions > .btn-reset{
+  height:46px;min-height:46px;
+  margin:0!important;
+  padding-top:0!important;padding-bottom:0!important;
+  display:inline-flex;align-items:center;justify-content:center;
+  line-height:1;box-sizing:border-box;
+}
 @media(max-width:380px){.modal-form .form-actions .btn-primary-glow .arrow{display:none}}
 /* Wide modal: don't stretch the submit button across 940px — size both to content
    and right-align the pair, with the primary action last. */

@@ -3,9 +3,15 @@
 <!-- ============ HERO ============ -->
 <section class="hero-pro" id="home">
   <div class="hero-bg" aria-hidden="true">
-    <video class="hero-video" autoplay muted loop playsinline preload="auto">
-      <source src="<?= asset('assets/img/hero-video.mp4') ?>" type="video/mp4">
-    </video>
+    <?php /*
+      The hero video is decorative (it sits at low opacity beneath a scrim).
+      Its src is held in data-src so the 2.7 MB file is not fetched on phones,
+      on metered connections, or when the visitor prefers reduced motion —
+      assets/js/ui.js attaches it at runtime only when it is worth the bytes.
+      The mesh/gradient beneath renders the same composition without it.
+    */ ?>
+    <video class="hero-video" muted loop playsinline preload="none"
+           data-src="<?= asset('assets/img/hero-video.mp4') ?>"></video>
     <div class="hero-mesh"></div>
     <div class="hero-grid-overlay"></div>
   </div>
@@ -18,9 +24,8 @@
         Where Ambitious People Build Great&nbsp;Products&nbsp;— and <span class="grad-text">Grow&nbsp;Fast</span>
       </h1>
       <p class="hero-pro-sub">
-        iTrend Solution is a global technology company built on the people inside it. Since 2016,
-        our teams have grown by learning across crafts, taking on real ownership early, and
-        building careers faster than they thought possible.
+        We design, source, and sell our own products to customers in seven countries. Since 2016
+        we have built the whole operation in Chennai, and we train our own people to run it.
       </p>
       <div class="hero-pro-cta">
         <a href="<?= url('/careers') ?>" class="btn-primary-glow">Explore Careers <span class="arrow">→</span></a>
@@ -39,7 +44,7 @@
   <section class="trust-section" id="trust">
     <div class="section-label" data-aos="fade-up">Why iTrend</div>
     <h2 class="section-title" data-aos="fade-up">Proven, and still <em>growing</em></h2>
-    <p class="section-desc" data-aos="fade-up" data-aos-delay="50">Nine years of building great products — and a team that keeps learning, leading, and growing together.</p>
+    <p class="section-desc" data-aos="fade-up" data-aos-delay="50">We started in 2016 with a handful of people. Today eight teams handle everything from sourcing to software, and our products reach customers on four continents.</p>
     <div class="trust-grid">
       <?php
         $metrics = [
@@ -67,17 +72,17 @@
   <section class="whatwedo band" id="what-we-do">
     <div class="section-label" data-aos="fade-up">What We Do</div>
     <h2 class="section-title" data-aos="fade-up">Every discipline, <em>under one roof</em></h2>
-    <p class="section-desc" data-aos="fade-up" data-aos-delay="50">iTrend brings every capability of a modern product company in-house. Whatever your craft, there's real work, real ownership, and the room — and mentors — to master it here.</p>
+    <p class="section-desc" data-aos="fade-up" data-aos-delay="50">Sourcing, design, marketing, logistics, and software all sit in the same office. We do not outsource the parts that matter, which is why people who join us end up understanding the whole business rather than one corner of it.</p>
     <div class="why-choose-grid">
       <?php
         $capabilities = [
-          ['bi-box-seam', 'Product Sourcing', 'Discovering and quality-checking new products alongside our China operations base.'],
-          ['bi-card-checklist', 'Cataloguing &amp; Listings', 'Building and managing rich product catalogues across international marketplaces.'],
-          ['bi-palette', 'Creative &amp; Design', 'Product photography, infographics, and brand creative, all crafted in-house.'],
-          ['bi-megaphone', 'Digital Marketing', 'A data-driven marketing team growing our brands and sharpening its craft daily.'],
-          ['bi-truck', 'Supply Chain &amp; Logistics', 'Inventory planning and worldwide logistics, from supplier to final fulfilment.'],
-          ['bi-bag-check', 'Order Management', 'Day-to-day operations and fulfilment, owned end-to-end by our own teams.'],
-          ['bi-cpu', 'Technology &amp; R&amp;D', 'In-house software, automation, and a dedicated R&amp;D practice building what\'s next.'],
+          ['bi-box-seam', 'Product Sourcing', 'Our team finds new products and inspects quality directly, working with our base in China.'],
+          ['bi-card-checklist', 'Cataloging &amp; Listings', 'We write and maintain every listing, image, and specification across the marketplaces we sell on.'],
+          ['bi-palette', 'Creative &amp; Design', 'Product photography, infographics, and brand work, shot and designed in our own studio.'],
+          ['bi-megaphone', 'Digital Marketing', 'Our marketing team runs the ad spend, watches the numbers daily, and owns the results.'],
+          ['bi-truck', 'Supply Chain &amp; Logistics', 'We plan inventory and move stock from the supplier to the customer\'s door across seven countries.'],
+          ['bi-bag-check', 'Order Management', 'Orders, returns, and fulfillment are handled here, so problems reach the people who can fix them.'],
+          ['bi-cpu', 'Technology &amp; R&amp;D', 'We build our own tools and automation, and keep a dedicated R&amp;D team working on what comes next.'],
         ];
         foreach ($capabilities as $i => [$icon, $title, $desc]):
       ?>
@@ -90,16 +95,16 @@
     </div>
 
     <!-- iTrend Glimpse — image showcase (click to enlarge) -->
-    <h3 class="showcase-title" id="glimpse" data-aos="fade-up">A Glimpse <em>Inside iTrend</em></h3>
+    <h3 class="showcase-title" id="glimpse" data-aos="fade-up">A Glimpse <em>of iTrend</em></h3>
     <div class="gallery-block">
       <div class="gallery-grid">
         <?php
           $showcase = [
             ['aboutus.JPG', 'wide', 'Our products and operations'],
             ['careers/024A0790.JPG', '', 'Team collaboration at our Chennai Head Office'],
-            ['careers/024A3591.JPG', 'tall', 'Learning and building, side by side'],
-            ['aboutus2.jpg', '', 'Craft, quality, and execution'],
-            ['careers/024A6127.JPG', '', 'One team, one vision'],
+            ['careers/024A3591.JPG', 'tall', 'Working together on the floor'],
+            ['aboutus2.jpg', '', 'Checking product quality'],
+            ['careers/024A6127.JPG', '', 'The team at our Chennai office'],
             ['careers/img1.jpg', '', 'Where the work gets done'],
           ];
           foreach ($showcase as $i => [$file, $cls, $cap]):
@@ -119,16 +124,16 @@
     <div class="about-grid">
       <div class="about-text">
         <h2 class="section-title" data-aos="fade-up">A company built on its <em>people</em></h2>
-        <p class="tagline-lead" data-aos="fade-up" data-aos-delay="50">iTrend Solution has grown from a small team in Chennai into a global technology company — built entirely on the people inside it. We develop our own expertise, our own teams, and our own way of working.</p>
-        <p data-aos="fade-up" data-aos-delay="100">Our people span Software Development, Research &amp; Development, Product Sourcing, Cataloguing, Content &amp; Design, Supply Chain, and Operations — a rare place to learn many crafts and grow fast, all under one roof.</p>
+        <p class="tagline-lead" data-aos="fade-up" data-aos-delay="50">iTrend started in 2016 with a dedicated team in Chennai. We now run eight departments and sell in seven countries, and we got here by training people rather than hiring expertise in.</p>
+        <p data-aos="fade-up" data-aos-delay="100">Software, R&amp;D, sourcing, cataloging, design, supply chain, and operations all work from the same floor. If you want to see how a product business actually runs, that is hard to find anywhere else.</p>
         <div class="about-pillars">
           <div class="pillar" data-aos="fade-up" data-aos-delay="120">
             <div class="pillar-icon">🎯</div>
-            <div class="pillar-text"><h4>Learn the Whole Picture</h4><p>Every discipline is in-house, so you see how a real product company runs — not just one slice of it.</p></div>
+            <div class="pillar-text"><h4>See the whole business</h4><p>You sit near the people who source the product, list it, market it, and ship it. Most jobs only show you one of those.</p></div>
           </div>
           <div class="pillar" data-aos="fade-up" data-aos-delay="180">
             <div class="pillar-icon">🚀</div>
-            <div class="pillar-text"><h4>Grow Fast</h4><p>Many of our team leads started as trainees. Here, growth follows impact — not tenure.</p></div>
+            <div class="pillar-text"><h4>Move up on merit</h4><p>Most of our team leads joined as trainees. What counts here is the work you do, not how long you have been here.</p></div>
           </div>
         </div>
       </div>
@@ -148,7 +153,7 @@
   <section class="awards-section" id="awards">
     <div class="section-label" data-aos="fade-up">Awards &amp; Recognition</div>
     <h2 class="section-title" data-aos="fade-up">Celebrating our <em>best performers</em></h2>
-    <p class="section-desc" data-aos="fade-up" data-aos-delay="50">At iTrend, recognition is direct and transparent — every effort is noticed and rewarded. Here's a glimpse of our best performers and proudest moments.</p>
+    <p class="section-desc" data-aos="fade-up" data-aos-delay="50">We give out Best Performer awards every quarter, in front of the whole company. These are some of the people who earned them.</p>
     <div class="gallery-block">
       <div class="gallery-grid awards-grid">
         <?php for ($i = 1; $i <= 6; $i++):
@@ -168,15 +173,15 @@
   <section class="careers-band band" id="careers">
     <div class="section-label" data-aos="fade-up">Build Your Career</div>
     <h2 class="section-title" data-aos="fade-up">Explore your potential and <em>grow with us</em> at iTrend</h2>
-    <p class="section-desc" data-aos="fade-up" data-aos-delay="50">We're a team of innovators and builders. Whether you're an engineer, marketer, designer, or analyst, there's a place for you to do your best work and grow fast.</p>
+    <p class="section-desc" data-aos="fade-up" data-aos-delay="50">We hire developers, analysts, designers, marketers, and operations people, including freshers. If you are willing to learn, we will teach you the rest.</p>
 
     <div class="careers-spotlight" data-aos="fade-up" data-aos-delay="60">
       <div class="cs-media"><img src="<?= asset('assets/img/careers/024A0790.JPG') ?>" alt="Life at iTrend — team collaboration" loading="lazy"></div>
       <div class="careers-cta-grid perks-2col">
-        <div class="career-perk glass"><span class="perk-emoji">🚀</span><h4>Ownership From Day One</h4><p>Real work and real impact from week one — your contribution is seen and rewarded.</p></div>
-        <div class="career-perk glass"><span class="perk-emoji">📈</span><h4>Fast Growth</h4><p>Many of our senior professionals and team leaders began their journeys as trainees. Progress here is about impact, not tenure.</p></div>
-        <div class="career-perk glass"><span class="perk-emoji">🌍</span><h4>Global Exposure</h4><p>Work alongside teams operating across the USA, Canada, UK, Germany, Italy, and Brazil.</p></div>
-        <div class="career-perk glass"><span class="perk-emoji">🎉</span><h4>A Real Community</h4><p>Festivals, outings, and celebrations all year — a workplace that feels like family.</p></div>
+        <div class="career-perk glass"><span class="perk-emoji">🚀</span><h4>Real work early</h4><p>You get something that matters in your first few weeks. It is a small enough team that your work does not disappear.</p></div>
+        <div class="career-perk glass"><span class="perk-emoji">📈</span><h4>Room to move up</h4><p>Several of our team leads and senior specialists started here as trainees. That path is still open.</p></div>
+        <div class="career-perk glass"><span class="perk-emoji">🌍</span><h4>Work that ships abroad</h4><p>Our products sell in the USA, Canada, the UK, Germany, Italy, and Brazil, so you learn how each market differs.</p></div>
+        <div class="career-perk glass"><span class="perk-emoji">🎉</span><h4>People you will like</h4><p>We mark the festivals properly, take trips, and eat together often. It is a friendly place to work.</p></div>
       </div>
     </div>
 
@@ -190,7 +195,7 @@
   <section class="cta-band" id="get-started">
     <div class="cta-inner glass" data-aos="zoom-in">
       <h2>Ready to build your <em>career</em> with us?</h2>
-      <p>Join a team where you'll own real work from day one, learn across crafts, and grow with a company that's been building for nine years.</p>
+      <p>We are hiring across every department. If you want to learn how a product company works from the inside, start here.</p>
       <div class="cta-actions cta-actions--pair">
         <a href="<?= url('/careers') ?>" class="btn-primary-glow">View Open Roles <span class="arrow">→</span></a>
         <button class="btn-ghost" data-bs-toggle="modal" data-bs-target="#careerModal">Apply Now</button>

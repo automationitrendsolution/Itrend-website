@@ -90,6 +90,7 @@
     <!-- Site styles: original design language + premium enterprise layer -->
     <link href="<?= asset('assets/css/index.css') ?>" rel="stylesheet">
     <link href="<?= asset('assets/css/premium.css') ?>" rel="stylesheet">
+    <link href="<?= asset('assets/css/select.css') ?>" rel="stylesheet">
   </head>
   <body data-page="<?= e($page ?? '') ?>">
 

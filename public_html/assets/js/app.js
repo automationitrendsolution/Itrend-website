@@ -59,18 +59,68 @@
     });
   }
 
-  /* ---------- 4. Pre-fill career role when "Apply" clicked on a job card ---------- */
-  document.querySelectorAll('.job-apply[data-role]').forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      var role = btn.getAttribute('data-role');
-      var select = document.querySelector('#careerModal select[name="role"]');
-      if (select && role) {
-        Array.prototype.forEach.call(select.options, function (opt) {
-          if (opt.textContent.trim() === role) opt.selected = true;
-        });
+  /* ---------- 4. Pre-fill career role when "Apply" clicked on a job card ----------
+     The visitor clicked a specific job, so the modal must open on THAT job.
+     Matching order:
+       1. exact title match          ("Full Stack Developer")
+       2. normalised title match     (case/&/punctuation differences)
+       3. department fallback        ("IT & Software")
+       4. "Other", so the field is never left blank on a required select
+     The role is also shown in the modal heading, confirming to the visitor
+     which job they are applying for. */
+  (function careerPrefill() {
+    var select = document.querySelector('#careerModal select[name="role"]');
+    if (!select) return;
+
+    var norm = function (s) {
+      return String(s || '')
+        .toLowerCase()
+        .replace(/&amp;/g, '&')
+        .replace(/[^a-z0-9]+/g, ' ')
+        .trim();
+    };
+
+    function selectOption(value) {
+      if (!value) return false;
+      var target = norm(value);
+      var opts = Array.prototype.slice.call(select.options);
+      var hit = opts.filter(function (o) { return norm(o.textContent) === target; })[0];
+      if (!hit) {
+        // Partial match: "Senior PPC / Performance Marketing Specialist"
+        // should still find "Digital Marketing" if that is what exists.
+        hit = opts.filter(function (o) {
+          var n = norm(o.textContent);
+          return n && (target.indexOf(n) !== -1 || n.indexOf(target) !== -1);
+        })[0];
       }
+      if (!hit) return false;
+      select.value = hit.value || hit.textContent;
+      hit.selected = true;
+      select.dispatchEvent(new Event('change', { bubbles: true }));
+      return true;
+    }
+
+    var titleEl = document.getElementById('careerModalLabel');
+    var defaultTitle = titleEl ? titleEl.textContent : '';
+
+    document.querySelectorAll('.job-apply[data-role]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var role = btn.getAttribute('data-role');
+        var fallback = btn.getAttribute('data-role-fallback');
+        if (!selectOption(role) && !selectOption(fallback)) { selectOption('Other'); }
+        // Reflect the chosen role in the modal heading.
+        if (titleEl && role) { titleEl.textContent = 'Apply — ' + role; }
+      });
     });
-  });
+
+    // Any other opener (nav CTA, "send us your profile anyway") resets the
+    // heading so a previous job's title does not linger.
+    document.querySelectorAll('[data-bs-target="#careerModal"]:not(.job-apply)').forEach(function (el) {
+      el.addEventListener('click', function () {
+        if (titleEl) { titleEl.textContent = defaultTitle; }
+      });
+    });
+  })();
 
   /* ---------- 4a. Smooth in-page scrolling + close mobile menu ---------- */
   var navCollapse = document.getElementById('mainNavbar');
@@ -221,13 +271,14 @@
     var currentActiveId = null;
     var ticking = false;
 
-    function setHash(hash) {
-      if (hash === current) { return; }
-      current = hash;
-      try {
-        history.replaceState(null, '', hash || (location.pathname + location.search));
-      } catch (err) { /* ignore */ }
-    }
+    /* The scroll position is deliberately NOT written back to the URL.
+       It used to be (history.replaceState on every section change), which
+       meant simply scrolling the home page rewrote the address to e.g.
+       "/#trust" — so a reload, a bookmark, or a shared link dropped the
+       next visitor half-way down the page and they never saw the hero.
+       Nav clicks still push a hash (see goToSection), so real navigation
+       remains deep-linkable; passive scrolling no longer rewrites history. */
+    function setHash(hash) { current = hash; }
 
     // Highlight the section in view. Permanent sections → highlight their link & hide the
     // dynamic slot. "Missing" sections → reveal the dynamic slot with that section's name

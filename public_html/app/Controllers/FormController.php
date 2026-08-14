@@ -7,6 +7,7 @@ namespace App\Controllers;
 use App\Core\Config;
 use App\Core\Controller;
 use App\Core\Csrf;
+use App\Core\Log;
 use App\Core\Mailer;
 use App\Core\RateLimiter;
 use App\Core\Recaptcha;
@@ -177,11 +178,30 @@ final class FormController extends Controller
         RateLimiter::hit($ip, $type);
 
         // 7. Email the submission to HR (this landing site stores nothing — email only).
-        $this->notify($type, $payload);
+        //    Email IS the persistence layer here: if it does not send, the
+        //    submission is gone. So the delivery result decides the response
+        //    rather than being discarded — reporting "message sent" after a
+        //    failed send loses real enquiries and real job applications.
+        $delivered = $this->notify($type, $payload);
 
         // Never keep uploaded files on disk — remove the temp resume regardless of mail state.
         if (!empty($payload['attachment']) && is_file((string) $payload['attachment'])) {
             @unlink((string) $payload['attachment']);
+        }
+
+        if (!$delivered) {
+            // 502: the request was valid, our upstream mail delivery failed.
+            // The visitor gets an honest message and a way to reach us that
+            // does not depend on the same broken path.
+            $this->respond(
+                $request,
+                false,
+                'We could not deliver your message just now. Please email us directly at '
+                . e((string) Config::get('MAIL_TO', 'hr@itrendsolution.com'))
+                . ' and we will pick it up right away.',
+                502
+            );
+            return;
         }
 
         $this->respond($request, true, $this->successMessage($type));
@@ -226,10 +246,25 @@ final class FormController extends Controller
         return $dest; // absolute temp path
     }
 
-    private function notify(string $type, array $payload): void
+    /**
+     * Deliver the submission to HR (and acknowledge the sender).
+     *
+     * @return bool True when the HR notification was accepted for delivery.
+     *              The acknowledgement to the visitor is best-effort and does
+     *              not affect this result — HR having the submission is what
+     *              determines whether the enquiry was actually received.
+     */
+    private function notify(string $type, array $payload): bool
     {
         if (!Mailer::enabled()) {
-            return;
+            // Not configured is a deployment fault, not a visitor error, and
+            // it silently dropped every submission before this was logged.
+            Log::error('Mail is not configured — form submission was NOT delivered', [
+                'form'  => $type,
+                'from'  => $payload['email'] ?? '(none)',
+                'hint'  => 'Set MAIL_HOST/MAIL_USERNAME/MAIL_PASSWORD in workspace/itrend-secrets.json',
+            ]);
+            return false;
         }
         $body = $this->hrEmailBody($type, $payload);
 
@@ -250,13 +285,40 @@ final class FormController extends Controller
         //    address is the Reply-To), so HR sees who it's from and can reply directly.
         $senderName = trim((string) ($payload['name'] ?? ''));
         $fromLabel  = $senderName !== '' ? ($senderName . ' via iTrend website') : null;
-        Mailer::send($this->hrSubject($type, $payload), $body, $replyTo, null, $attachment, $fromLabel);
+
+        // Mailer::send() returns false on failure. Previously its result was
+        // discarded, so an SMTP outage looked identical to success: the
+        // visitor saw "message sent" while nothing reached HR and no trace
+        // was recorded anywhere. The delivery result is now logged with
+        // enough context to identify the lost submission and follow it up.
+        $sent = Mailer::send($this->hrSubject($type, $payload), $body, $replyTo, null, $attachment, $fromLabel);
+        if (!$sent) {
+            Log::error('HR notification email FAILED to send', [
+                'form'    => $type,
+                'from'    => $replyTo ?? '(no email supplied)',
+                'name'    => $senderName !== '' ? $senderName : '(none)',
+                'error'   => Mailer::lastError(),
+                'hasFile' => $attachment !== null,
+            ]);
+        }
 
         // 2) Auto-acknowledge the candidate — sent FROM hr@ TO the address they entered.
         //    Only when a valid email is present; never carries the resume or internal IP.
         if ($replyTo !== null) {
-            Mailer::send($this->ackSubject($type), $this->ackBody($type, $payload), null, $replyTo, null);
+            $acked = Mailer::send($this->ackSubject($type), $this->ackBody($type, $payload), null, $replyTo, null);
+            if (!$acked) {
+                // Non-critical: HR still has the submission. Logged at warning
+                // level so a broken acknowledgement is visible but does not
+                // read as a lost enquiry.
+                Log::warning('Acknowledgement email failed to send', [
+                    'form'  => $type,
+                    'to'    => $replyTo,
+                    'error' => Mailer::lastError(),
+                ]);
+            }
         }
+
+        return $sent;
     }
 
     /** Subject line for the acknowledgement email sent to the candidate. */

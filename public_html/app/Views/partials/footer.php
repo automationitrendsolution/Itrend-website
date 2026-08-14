@@ -7,7 +7,7 @@
           <img src="<?= asset('assets/img/itrend-logo.png') ?>" alt="iTrend Solution" class="footer-logo-img">
         </a>
         <p class="footer-about">
-          iTrend Solution is a global technology company built on the people inside it. Since 2016, we have grown by learning together — developing our own teams, our own expertise, and our own way of working. One company. One vision.
+          iTrend Solution designs, sources, and sells its own products to customers in seven countries. We have been doing it since 2016, with our own teams in Chennai.
         </p>
         <div class="footer-socials">
           <a href="https://www.linkedin.com/company/itrendsolution" target="_blank" rel="noopener" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
@@ -61,7 +61,10 @@
       <span class="sep">·</span>
       <a href="<?= url('/terms') ?>">Terms of Service</a>
       <span class="sep">·</span>
-      <a href="https://www.instagram.com/itrendsolution" target="_blank" rel="noopener">#iTrendSolution</a>
+      <?php /* The label is a hashtag, so it links to the hashtag feed rather
+               than the profile — the profile is already linked by the
+               Instagram icon above. */ ?>
+      <a href="https://www.instagram.com/explore/tags/itrendsolution/" target="_blank" rel="noopener" aria-label="#iTrendSolution on Instagram">#iTrendSolution</a>
     </div>
   </div>
 </footer>

@@ -3,7 +3,7 @@
   <div class="page-hero-inner">
     <div class="breadcrumb-nav"><a href="<?= url('/') ?>">Home</a><span class="sep">›</span><span class="current">Careers</span></div>
     <h1 class="page-hero-title">Shape the Future of <em>E-Commerce</em> With Us</h1>
-    <p class="page-hero-subtitle">Careers at iTrend offer a dynamic, growth-driven environment where innovation meets opportunity. We provide hands-on experience, rapid learning, and the chance to make a real impact from day one — whether you're a fresher kickstarting your journey or an experienced professional seeking new challenges.</p>
+    <p class="page-hero-subtitle">We hire people who want to learn the whole business, not just one slice of it. Freshers and experienced professionals both start with real work, and we train you as you go.</p>
     <div class="page-hero-cta" data-aos="fade-up" data-aos-delay="80">
       <a href="#open-roles" class="btn-primary-glow">View Open Roles <span class="arrow">→</span></a>
     </div>
@@ -19,22 +19,22 @@
   <section id="why" class="band">
     <div class="section-label" data-aos="fade-up">Why Work at iTrend</div>
     <h2 class="section-title" data-aos="fade-up">A place where careers <em>accelerate</em>.</h2>
-    <p class="section-desc" data-aos="fade-up" data-aos-delay="50">Big enough to do serious work for global brands, lean enough that what you do is seen, valued, and rewarded fast.</p>
+    <p class="section-desc" data-aos="fade-up" data-aos-delay="50">The company is large enough that the work matters, and small enough that people notice who did it.</p>
     <div class="why-grid">
       <div class="why-card" data-aos="fade-up">
         <div class="why-icon">🤝</div>
         <h3>Culture</h3>
-        <p>Our culture is built on innovation, collaboration, and transparency. We embrace agility and adaptability, encourage every individual to take ownership, and keep open communication at the heart of everything — through brainstorming sessions, team outings, and celebrating achievements together.</p>
+        <p>We keep things open. Decisions get explained, questions get answered, and nobody has to guess where they stand. We also make time for the non-work part: outings, festivals, and a proper celebration when something goes well.</p>
       </div>
       <div class="why-card" data-aos="fade-up" data-aos-delay="100">
         <div class="why-icon">🧭</div>
         <h3>Management That Backs You</h3>
-        <p>Our leadership empowers individuals by fostering ownership, attention to detail, and proactiveness. With a keen eye for talent, our management recognises potential instantly and provides unwavering support — so the people who show drive are noticed and invested in.</p>
+        <p>Our managers give people room to own their work and step in when it is needed. If you show you can take more on, you will be given it.</p>
       </div>
       <div class="why-card" data-aos="fade-up" data-aos-delay="200">
         <div class="why-icon">📈</div>
         <h3>Professional Growth</h3>
-        <p>As a fast-growing company, we provide hands-on experience and rapid learning from day one. Whether you're a fresher kickstarting your journey or an experienced professional seeking new challenges, iTrend is a place to grow, innovate, and advance quickly across crafts.</p>
+        <p>You learn by doing here, starting in your first week. The company is still growing, which means new responsibilities come up faster than they would somewhere settled.</p>
       </div>
     </div>
   </section>
@@ -43,15 +43,15 @@
   <section id="teams">
     <div class="section-label" data-aos="fade-up">Our Teams</div>
     <h2 class="section-title" data-aos="fade-up">Every capability, <em>under one roof.</em></h2>
-    <p class="section-desc" data-aos="fade-up" data-aos-delay="50">iTrend is a multidisciplinary team of 60+ specialists across eight departments working in perfect sync. Wherever your craft fits, there's a team here for you.</p>
+    <p class="section-desc" data-aos="fade-up" data-aos-delay="50">Eight departments, 60+ people, all in one office. Whatever you do, there is a team here doing it.</p>
     <div class="dept-grid">
       <?php
         $teams = [
           ['💻','IT &amp; Software','Tools, dashboards &amp; automation'],
-          ['📦','SCM &amp; Logistics','Sourcing to FBA fulfilment'],
-          ['📋','Order Management','Operations &amp; fulfilment'],
+          ['📦','SCM &amp; Logistics','Sourcing to FBA fulfillment'],
+          ['📋','Order Management','Operations &amp; fulfillment'],
           ['💰','Accounts','Finance &amp; payouts'],
-          ['🎨','Cataloguing &amp; Graphic Design','Listings &amp; A+ content'],
+          ['🎨','Cataloging &amp; Graphic Design','Listings &amp; A+ content'],
           ['📣','Digital Marketing','PPC &amp; brand growth'],
           ['🔬','R&amp;D','New products &amp; research'],
           ['👥','Human Resources','People &amp; culture'],
@@ -91,7 +91,17 @@
               <span class="job-tag"><i class="bi bi-clock"></i> <?= e($job['exp']) ?></span>
             </div>
           </div>
-          <button class="job-apply" data-bs-toggle="modal" data-bs-target="#careerModal" data-role="<?= e($job['dept']) ?>">Apply <i class="bi bi-arrow-right"></i></button>
+          <?php /*
+            Applying from a specific role should prefill THAT role. data-role
+            carries the job title (what the visitor clicked); data-role-fallback
+            carries the department, used only when the title has no matching
+            option in the dropdown. Previously only the department was sent, so
+            clicking "Full Stack Developer" selected "IT & Software".
+          */ ?>
+          <button class="job-apply" data-bs-toggle="modal" data-bs-target="#careerModal"
+                  data-role="<?= e($job['title']) ?>"
+                  data-role-fallback="<?= e($job['dept']) ?>"
+                  aria-label="Apply for <?= e($job['title']) ?>">Apply <i class="bi bi-arrow-right"></i></button>
         </div>
       <?php endforeach; ?>
       <p class="jobs-empty" id="jobsEmpty" hidden>No roles match your search. Try a different keyword, or <a href="#" data-bs-toggle="modal" data-bs-target="#careerModal" class="inline-link">send us your profile anyway →</a></p>
@@ -105,10 +115,10 @@
     <h2 class="section-title" data-aos="fade-up">Where a career here can <em>take you</em>.</h2>
     <div class="timeline">
       <?php foreach ([
-        ['Month 0–3','Trainee / Associate','Onboard fast and get hands-on with live marketplace work from week one.'],
-        ['Month 3–12','Specialist','Own a brand, marketplace, or workflow end-to-end and drive measurable results.'],
-        ['Year 1–2','Senior Specialist','Become the go-to expert in your craft and mentor newcomers.'],
-        ['Year 2+','Team Lead &amp; Beyond','Lead a discipline, build your team, and influence the business.'],
+        ['Month 0–3','Trainee / Associate','You are on live marketplace work in your first week, with someone senior alongside you.'],
+        ['Month 3–12','Specialist','You take a brand, marketplace, or workflow and run it yourself.'],
+        ['Year 1–2','Senior Specialist','You become the person others ask, and you start training the newer joiners.'],
+        ['Year 2+','Team Lead &amp; Beyond','You run a department, hire your own team, and have a say in where the business goes.'],
       ] as $i => [$stage,$title,$desc]): ?>
         <div class="timeline-step" data-aos="fade-left" data-aos-delay="<?= $i*80 ?>">
           <div class="timeline-dot"><?= sprintf('%02d', $i+1) ?></div>
@@ -122,27 +132,37 @@
   <section id="culture">
     <div class="section-label" data-aos="fade-up">Culture at iTrend</div>
     <h2 class="section-title" data-aos="fade-up">More than a workplace — a <em>family.</em></h2>
-    <p class="section-desc" data-aos="fade-up" data-aos-delay="50">Our culture is built on innovation, collaboration, and transparency. We embrace agility, encourage every individual to take ownership, and keep open communication at the heart of what we do — so ideas are heard, efforts are recognised, and contributions make a real impact.</p>
+    <p class="section-desc" data-aos="fade-up" data-aos-delay="50">We eat together, travel together, and mark every festival properly. The work is demanding, but it is not the kind of place where you keep your head down and say nothing.</p>
     <div class="gallery-block">
       <div class="gallery-grid">
         <?php
+          /*
+            Intrinsic dimensions are declared on every tile. In this masonry
+            (CSS multi-column) layout the tiles have no fixed height, so
+            without width/height the browser reserves no space: a 0px-tall
+            tile never intersects the viewport, loading="lazy" therefore never
+            fetches the image, and the gallery stays permanently empty.
+            Declaring the real size breaks that deadlock and also removes the
+            layout shift as each image arrives.
+          */
           $gallery = [
-            ['024A0790.JPG','wide','Team collaboration at the Chennai HQ'],
-            ['024A1277.JPG','','Celebrating a successful quarter'],
-            ['024A3591.JPG','tall','Working the marketplaces, side by side'],
-            ['024A3603.JPG','','Festivals & celebrations together'],
-            ['024A6127.JPG','','One team, one vision'],
-            ['024A6318.JPG','','Recognition that\'s earned and shared'],
-            ['img1.jpg','','Where the work gets done'],
-            ['life-1.jpg','','Moments at iTrend'],
-            ['life-2.jpg','','Moments at iTrend'],
-            ['life-3.jpg','tall','Moments at iTrend'],
+            ['024A0790.JPG','wide','Team collaboration at the Chennai HQ', 1500, 1000],
+            ['024A1277.JPG','','Celebrating a successful quarter',         1500, 2250],
+            ['024A3591.JPG','tall','Working the marketplaces, side by side',1500, 1000],
+            ['024A3603.JPG','','Festivals & celebrations together',        1500, 1000],
+            ['024A6127.JPG','','The team at our Chennai office',          1500, 1000],
+            ['024A6318.JPG','','Recognition that\'s earned and shared',    1500, 1000],
+            ['img1.jpg','','Where the work gets done',                     1500, 1060],
+            ['life-1.jpg','','Moments at iTrend',                          1500, 1000],
+            ['life-2.jpg','','Moments at iTrend',                          1500, 1000],
+            ['life-3.jpg','tall','Moments at iTrend',                      1500, 1000],
           ];
-          foreach ($gallery as $i => [$file,$cls,$cap]):
+          foreach ($gallery as $i => [$file,$cls,$cap,$w,$h]):
         ?>
           <div class="gallery-item <?= $cls ?>" data-aos="zoom-in" data-aos-delay="<?= ($i%3)*60 ?>" data-caption="<?= e($cap) ?>">
             <span class="zoom-badge"><i class="bi bi-arrows-fullscreen"></i></span>
-            <img src="<?= asset('assets/img/careers/' . rawurlencode($file)) ?>" alt="<?= e($cap) ?>" loading="lazy">
+            <img src="<?= asset('assets/img/careers/' . rawurlencode($file)) ?>" alt="<?= e($cap) ?>"
+                 width="<?= $w ?>" height="<?= $h ?>" loading="lazy" decoding="async">
           </div>
         <?php endforeach; ?>
       </div>
@@ -153,12 +173,12 @@
   <section id="recognition" class="band">
     <div class="section-label" data-aos="fade-up">Recognition at iTrend</div>
     <h2 class="section-title" data-aos="fade-up">Effort that's <em>noticed</em> &amp; rewarded</h2>
-    <p class="section-desc" data-aos="fade-up" data-aos-delay="50">At iTrend, recognition is direct and transparent — every effort is noticed and appreciated. From "Best Performers" awards to everyday shout-outs, your contribution never goes unseen.</p>
+    <p class="section-desc" data-aos="fade-up" data-aos-delay="50">We hand out Best Performer awards every quarter in front of the whole company, and we say thank you the rest of the time too.</p>
     <div class="why-choose-grid">
       <?php foreach ([
-        ['bi-trophy','Best Performers','Quarterly awards celebrating the people driving real results.'],
-        ['bi-hand-thumbs-up','Direct &amp; Transparent','Recognition tied to contribution — visible and merit-based.'],
-        ['bi-rocket-takeoff','Rapid Advancement','Many team leads started as trainees; growth follows impact.'],
+        ['bi-trophy','Best Performers','Given every quarter, in front of everyone.'],
+        ['bi-hand-thumbs-up','Direct &amp; Transparent','Based on what you did, and explained so everyone understands why.'],
+        ['bi-rocket-takeoff','Rapid Advancement','Most of our team leads started as trainees. That route is still open.'],
       ] as $i => [$icon,$t,$d]): ?>
         <div class="reason-card glass" data-aos="fade-up" data-aos-delay="<?= $i*80 ?>">
           <i class="bi <?= $icon ?>"></i><h4><?= $t ?></h4><p><?= $d ?></p>
@@ -171,7 +191,7 @@
   <section class="cta-band" id="join">
     <div class="cta-inner glass" data-aos="zoom-in">
       <h2>Join iTrend — Shape the Future of <em>E-Commerce</em></h2>
-      <p>We're on a mission to revolutionise e-commerce by empowering brands to sell anywhere, faster. Whether you're a developer, marketer, sales expert, or specialist — there's a place for you to grow and thrive.</p>
+      <p>We are hiring across every department. If you want to learn how a product company actually works, this is a good place to do it.</p>
       <div class="cta-actions">
         <button class="btn-primary-glow" data-bs-toggle="modal" data-bs-target="#careerModal">Apply Now <span class="arrow">→</span></button>
         <a href="#open-roles" class="btn-ghost">View Open Roles</a>

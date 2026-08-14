@@ -2,7 +2,7 @@
   <div class="page-hero-inner">
     <div class="breadcrumb-nav"><a href="<?= url('/') ?>">Home</a><span class="sep">›</span><span class="current">Contact</span></div>
     <h1 class="page-hero-title">Let's start a <em>conversation</em></h1>
-    <p class="page-hero-subtitle">Products, partnerships, demos, or careers — tell us what you need and we'll get back within 24 hours.</p>
+    <p class="page-hero-subtitle">Whether it is a product question, a partnership, or a job application, send it here. We reply within one business day.</p>
   </div>
 </section>
 

@@ -126,7 +126,7 @@ final class PageController extends Controller
         return [
             ['title' => 'Full Stack Developer', 'dept' => 'IT & Software', 'location' => 'Chennai / Remote', 'type' => 'Full-time', 'exp' => '2+ yrs'],
             ['title' => 'Data Analyst', 'dept' => 'IT & Software', 'location' => 'Chennai', 'type' => 'Full-time', 'exp' => '1-3 yrs'],
-            ['title' => 'Cataloguing Executive', 'dept' => 'Cataloguing', 'location' => 'Chennai', 'type' => 'Full-time', 'exp' => '1-3 yrs'],
+            ['title' => 'Cataloging Executive', 'dept' => 'Cataloging', 'location' => 'Chennai', 'type' => 'Full-time', 'exp' => '1-3 yrs'],
             ['title' => 'Graphic Designer', 'dept' => 'Graphic Design', 'location' => 'Chennai', 'type' => 'Full-time', 'exp' => '2+ yrs'],
             ['title' => 'Senior PPC / Performance Marketing Specialist', 'dept' => 'Digital Marketing', 'location' => 'Chennai', 'type' => 'Full-time', 'exp' => '3+ yrs'],
             ['title' => 'Supply Chain & Logistics Analyst', 'dept' => 'SCM & Logistics', 'location' => 'Chennai', 'type' => 'Full-time', 'exp' => '2+ yrs'],
